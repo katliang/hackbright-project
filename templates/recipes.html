@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Recipe Search Results{% endblock %}
+
+{% block content %}
+
+<h2>Recipe Search Results</h2>
+
+<p>Select Recipe(s) You Want to Cook:</p>
+
+<p><form action="/shopping_list" method="POST">
+
+    {% for recipe in recipe_info %}
+        <b>Recipe Name: {{ recipe['title'] }}</b><input type="checkbox" name="recipe" value="{{ recipe['extendedIngredients'] }}"><br>
+        Ready in {{ recipe['readyInMinutes'] }} minutes<br>
+        <img src="{{ recipe['image'] }}"><br>
+        via <a href="{{ recipe['sourceUrl'] }}">{{ recipe['sourceName'] }}</a><br><br>
+
+        Ingredients:<br>
+        {% for ingredient in recipe['extendedIngredients'] %}
+            {{ ingredient['amount'] }} {{ ingredient['unit'] }} {{ ingredient['name'] }}<br>
+        {% endfor %}<br>
+    {% endfor %}
+    Add Ingredients to Your Shopping List? <input type="submit" value="YES">
+</p>
+
+
+{% endblock %}

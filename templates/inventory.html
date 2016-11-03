@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Inventory{% endblock %}
+
+{% block content %}
+
+<h2>Fridge Inventory</h2>
+
+<p>{% if current_ingredients %}
+    <p>Select the Ingredients You Want to Use:</p>
+        <form action="/recipes">
+            {% for ingredient in current_ingredients %}
+                {{ ingredient }}<input type="checkbox" name="ingredient" 
+                                 value="{{ ingredient }}"><br>
+            {% endfor %}
+            <input type="submit" value="Find Recipe(s)">
+        </form>
+
+    {% else %}
+    <p>You Currently Have No Ingredients! Search Below to Find a Recipe:</p>
+        <form action="/recipes">
+            Diet Restrictions: 
+                <select name="diet">
+                    <option value="none">None</option><br>
+                    <option value="pescetarian">Pescatarian</option><br>
+                    <option value="lactovegetarian">Lacto Vegetarian</option><br>
+                    <option value="ovovegetarian">Ovo vegetarian</option><br>
+                    <option value="vegan">Vegan</option><br>
+                    <option value="vegetarian">Vegetarian</option>
+                </select><br><br>
+            Intolerance(s): (Select all that apply)<br>
+                <input type="checkbox" name="intolerances" value="dairy">Dairy<br>
+                <input type="checkbox" name="intolerances" value="egg">Egg<br>
+                <input type="checkbox" name="intolerances" value="gluten">Gluten<br>
+                <input type="checkbox" name="intolerances" value="peanut">Peanut<br>
+                <input type="checkbox" name="intolerances" value="sesame">Sesame<br>
+                <input type="checkbox" name="intolerances" value="seafood">Seafood<br>
+                <input type="checkbox" name="intolerances" value="shellfish">Shellfish<br>
+                <input type="checkbox" name="intolerances" value="soy">Soy<br>
+                <input type="checkbox" name="intolerances" value="Sulfite">Sulfite<br>
+                <input type="checkbox" name="intolerances" value="treenut">Tree Nut<br>
+                <input type="checkbox" name="intolerances" value="wheat">Wheat<br><br>
+            Number of Results: <input type="number" name="numresults"><br>
+            Search word: <input type="text" name="query"><br>
+            <input type="submit" value="Find New Recipe(s)">
+        </form>
+    {% endif %}
+
+</p>
+
+{% endblock %}
