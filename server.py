@@ -65,12 +65,10 @@ def show_shopping_list():
 
     recipes_ingredients = request.form.getlist("recipe")
 
-    print 'recipes_ingredients is ', recipes_ingredients
-    print 'recipes_ingredients[0] is ', recipes_ingredients[0]
-    print 'recipes_ingredients type is ', type(recipes_ingredients)
-    print 'recipes_ingredients[0] type is ', type(recipes_ingredients[0])
-
-    # recipes_ingredients is a list of UNICODE
+    print "recipes_ingredients is ", recipes_ingredients
+    print "recipes_ingredients[0] is ", recipes_ingredients[0]
+    print "recipes_ingredients type is ", type(recipes_ingredients)
+    print "recipes_ingredients[0] type is ", type(recipes_ingredients[0])
 
     return render_template("shopping.html")
 

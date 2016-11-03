@@ -16,7 +16,7 @@ class User(db.Model):
     __tablename__ = 'users'
 
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    username = db.Column(db.String(50), nullable=False, unique=True)
+    username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(50), nullable=False)
 
     def __repr__(self):
@@ -25,7 +25,7 @@ class User(db.Model):
         return '<User user_id=%s username=%s password=%s>' % (self.user_id,
                                                               self.username,
                                                               self.password,
-                                                              )
+                                                             )
 
 
 class Recipe(db.Model):
@@ -33,20 +33,26 @@ class Recipe(db.Model):
 
     __tablename__ = 'recipes'
 
-    recipe_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    recipe_id = db.Column(db.Integer, primary_key=True)
     recipe_name = db.Column(db.String(100), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
 
     def __repr__(self):
         """ Provide helpful representation when printed."""
 
-        return '<Recipe recipe_id=%s recipe_name=%s>' % (self.recipe_id,
-                                                         self.recipe_name,
-                                                         self.user_id
-                                                         )
+        return '<Recipe recipe_id=%s recipe_name=%s user_id=%s>' % (self.recipe_id,
+                                                                    self.recipe_name,
+                                                                    self.user_id,
+                                                                    )
 
     # Define relationship to users table
     user = db.relationship("User", backref=db.backref("recipes"))
+
+    # Define relationship to ingredients table
+    ingredients = db.relationship("Ingredient",
+                                  secondary="recipe_ingredients",
+                                  backref="recipes",
+                                  )
 
 
 class Ingredient(db.Model):
@@ -54,9 +60,9 @@ class Ingredient(db.Model):
 
     __tablename__ = 'ingredients'
 
-    ingredient_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    ingredient_id = db.Column(db.Integer, primary_key=True)
     ingredient_name = db.Column(db.String(100), nullable=False)
-    ingredient_unit = db.Column(db.String(20), nullable=False)
+    ingredient_unit = db.Column(db.String(20), nullable=True)
 
     def __repr__(self):
         """ Provide helpful representation when printed."""
@@ -86,11 +92,6 @@ class RecipeIngredient(db.Model):
                                                                                                          self.quantity,
                                                                                                          )
 
-    # Define relationship to recipes table
-    recipe = db.relationship("Recipe", backref=db.backref("recipe_ingredients"))
-
-    # Define relationship to ingredients table
-    ingredient = db.relationship("Ingredient", backref=db.backref("recipe_ingredients"))
 
 
 """ Helper functions for applications. """
