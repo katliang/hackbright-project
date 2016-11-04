@@ -1,8 +1,8 @@
 """ Flask site for project app."""
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 from flask_debugtoolbar import DebugToolbarExtension
-from model import search_recipes
+from model import search_recipes, recipe_info_by_id
 from model import User
 from model import Recipe
 from model import Ingredient
@@ -37,6 +37,7 @@ def show_inventory():
 
     if check_user:
         # user begins with no inventory
+        session['user_id'] = check_user.user_id
         current_ingredients = []
         return render_template("inventory.html", current_ingredients=current_ingredients)
     else:
@@ -63,12 +64,34 @@ def show_matching_recipes():
 def show_shopping_list():
     """Display shopping list of missing ingredients."""
 
-    recipes_ingredients = request.form.getlist("recipe")
+    recipe_ids = request.form.getlist("recipeid")
 
-    print "recipes_ingredients is ", recipes_ingredients
-    print "recipes_ingredients[0] is ", recipes_ingredients[0]
-    print "recipes_ingredients type is ", type(recipes_ingredients)
-    print "recipes_ingredients[0] type is ", type(recipes_ingredients[0])
+    for recipe_id in recipe_ids:
+        all_rec = db.session.query(Recipe.recipe_id).all()
+        recipe = recipe_info_by_id(recipe_id)
+        if (int(recipe['id']),) not in all_rec:  
+            selected_recipe = Recipe(recipe_id=int(recipe['id']),
+                                     recipe_name=str(recipe['title'].encode('utf-8')),
+                                     user_id=int(session['user_id']),
+                                     )
+            db.session.add(selected_recipe)
+        
+        for ingredient in recipe['extendedIngredients']:
+            all_ing = db.session.query(Ingredient.ingredient_id).all()
+            if (int(ingredient['id']),) not in all_ing:
+                recipe_ingredient = Ingredient(ingredient_id=int(ingredient['id']),
+                                               ingredient_name=str(ingredient['name']),
+                                               ingredient_unit=str(ingredient['unit']),
+                                               )
+                db.session.add(recipe_ingredient)
+
+            recipe_quantity = RecipeIngredient(recipe_id=int(recipe['id']),
+                                               ingredient_id=int(ingredient['id']),
+                                               quantity=float(ingredient['amount']),
+                                               )
+            db.session.add(recipe_quantity)
+
+    db.session.commit()
 
     return render_template("shopping.html")
 

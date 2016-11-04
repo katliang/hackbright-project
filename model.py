@@ -48,12 +48,6 @@ class Recipe(db.Model):
     # Define relationship to users table
     user = db.relationship("User", backref=db.backref("recipes"))
 
-    # Define relationship to ingredients table
-    ingredients = db.relationship("Ingredient",
-                                  secondary="recipe_ingredients",
-                                  backref="recipes",
-                                  )
-
 
 class Ingredient(db.Model):
     """ Ingredient data."""
@@ -92,6 +86,11 @@ class RecipeIngredient(db.Model):
                                                                                                          self.quantity,
                                                                                                          )
 
+    # Define relationship to recipes table
+    recipe = db.relationship("Recipe", backref=db.backref("recipe_ingredients"))
+
+    # Define relationship to ingredients table
+    ingredient = db.relationship("Ingredient", backref=db.backref("recipe_ingredients"))
 
 
 """ Helper functions for applications. """
@@ -152,11 +151,17 @@ def search_recipes(diet, intolerances, numresults, query):
 
     # second request to get info by recipe id
     for recipe_id in result_ids:
-        get_recipe_url = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/" + str(recipe_id) + "/information?includeNutrition=false"
-        recipe_response = call_api(get_recipe_url)
-        result_recipe_info.append(recipe_response.body)
+        result_recipe_info.append(recipe_info_by_id(recipe_id))
 
     return result_recipe_info
+
+def recipe_info_by_id(recipe_id):
+    """Takes in a recipe id and returns recipe info for that recipe."""
+
+    get_recipe_url = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/" + str(recipe_id) + "/information?includeNutrition=false"
+    recipe_response = call_api(get_recipe_url)
+
+    return recipe_response.body
 
 
 if __name__ == "__main__":

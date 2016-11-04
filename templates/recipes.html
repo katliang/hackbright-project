@@ -11,7 +11,7 @@
 <p><form action="/shopping_list" method="POST">
 
     {% for recipe in recipe_info %}
-        <b>Recipe Name: {{ recipe['title'] }}</b><input type="checkbox" name="recipe" value="{{ recipe['extendedIngredients'] }}"><br>
+        <b>Recipe Name: {{ recipe['title'] }}</b><input type="checkbox" name="recipeid" value="{{ recipe['id'] }}"><br>
         Ready in {{ recipe['readyInMinutes'] }} minutes<br>
         <img src="{{ recipe['image'] }}"><br>
         via <a href="{{ recipe['sourceUrl'] }}">{{ recipe['sourceName'] }}</a><br><br>
