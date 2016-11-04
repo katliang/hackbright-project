@@ -93,7 +93,9 @@ def show_shopping_list():
 
     db.session.commit()
 
-    return render_template("shopping.html")
+    current_user = User.query.get(session['user_id'])
+
+    return render_template("shopping.html", current_user=current_user)
 
 
 
