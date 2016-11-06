@@ -8,10 +8,13 @@
 
 <p>Selected Recipes:</p>
     <ul>
-    {% for recipe in recipes %}
-        <li>{{ recipe[0] }}</li>
-    {% endfor %}
+    <form>
+        {% for recipe in recipes %}
+        <li>{{ recipe[0] }}<input type="checkbox" name="recipe" value="{{ recipe[0] }}"></li>
+        {% endfor %}
     </ul>
+    <input type="submit" value="Remove Recipe(s)">
+    </form>
 
 <p>List of Ingredients:</p>
     <ul>
