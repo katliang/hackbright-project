@@ -6,13 +6,19 @@
 
 <h2>Shopping List</h2>
 
-<p>List of Ingredients:<br>
+<p>Selected Recipes:</p>
     <ul>
-    {% for quantity, unit, name in ingredients %}
-        <li>{{ quantity }} {{ unit }} {{ name }}</li><br>
+    {% for recipe in recipes %}
+        <li>{{ recipe[0] }}</li>
     {% endfor %}
     </ul>
-</p>
+
+<p>List of Ingredients:</p>
+    <ul>
+    {% for quantity, unit, name in ingredients %}
+        <li>{{ quantity }} {{ unit }} {{ name }}</li>
+    {% endfor %}
+    </ul>
 
 <p><a href="/inventory">Search for More Recipes</a></p>
 

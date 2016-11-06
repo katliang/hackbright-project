@@ -99,6 +99,8 @@ def show_shopping_list():
 
     db.session.commit()
 
+    recipes = db.session.query(Recipe.recipe_name).filter(User.user_id == session['user_id']).all()
+
     ingredients = (db.session.query(func.sum(RecipeIngredient.quantity).label('quantities'),
                                     Ingredient.ingredient_unit,
                                     Ingredient.ingredient_name)
@@ -106,9 +108,10 @@ def show_shopping_list():
                              .join(Recipe)
                              .join(User)
                              .filter(User.user_id == session['user_id'])
-                             .group_by(Ingredient.ingredient_unit, Ingredient.ingredient_name)).all()
+                             .group_by(Ingredient.ingredient_unit, Ingredient.ingredient_name)
+                             .order_by(Ingredient.ingredient_name)).all()
 
-    return render_template("shopping.html", ingredients=ingredients)
+    return render_template("shopping.html", ingredients=ingredients, recipes=recipes)
 
 
 
