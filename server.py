@@ -27,9 +27,14 @@ def homepage():
     return render_template("homepage.html")
 
 
-@app.route("/inventory", methods=["POST"])
+@app.route("/inventory", methods=["GET", "POST"])
 def show_inventory():
     """ Display user's current ingredients."""
+
+    # if user is searching again for recipes, session is still active
+    if session['user_id']:
+        current_ingredients = []
+        return render_template("inventory.html", current_ingredients=current_ingredients)
 
     username = request.form.get("username")
     password = request.form.get("password")
