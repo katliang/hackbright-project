@@ -9,6 +9,7 @@ from model import Ingredient
 from model import RecipeIngredient
 from model import connect_to_db, db
 from jinja2 import StrictUndefined
+from sqlalchemy.sql import func
 
 import os
 
@@ -93,9 +94,16 @@ def show_shopping_list():
 
     db.session.commit()
 
-    current_user = User.query.get(session['user_id'])
+    ingredients = (db.session.query(func.sum(RecipeIngredient.quantity).label('quantities'),
+                                    Ingredient.ingredient_unit,
+                                    Ingredient.ingredient_name)
+                             .join(Ingredient)
+                             .join(Recipe)
+                             .join(User)
+                             .filter(User.user_id == session['user_id'])
+                             .group_by(Ingredient.ingredient_unit, Ingredient.ingredient_name)).all()
 
-    return render_template("shopping.html", current_user=current_user)
+    return render_template("shopping.html", ingredients=ingredients)
 
 
 

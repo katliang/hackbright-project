@@ -6,16 +6,12 @@
 
 <h2>Shopping List</h2>
 
-<p>Current user is {{ current_user.username }}</p>
-
-<p>Selected recipes are:<br>
-    {% for recipe in current_user.recipes %}
-        {% for ingredient in recipe.recipe_ingredients %}
-            {{ ingredient.quantity }}
-            {{ ingredient.ingredient.ingredient_unit }}
-            {{ ingredient.ingredient.ingredient_name }}<br>
-        {% endfor %}
+<p>List of Ingredients:<br>
+    <ul>
+    {% for quantity, unit, name in ingredients %}
+        <li>{{ quantity }} {{ unit }} {{ name }}</li><br>
     {% endfor %}
+    </ul>
 </p>
 
 
