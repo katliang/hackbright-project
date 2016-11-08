@@ -76,7 +76,7 @@ def show_shopping_list():
     # dictionary for multiple recipes selected
     # key: ingredient name
     # value: {quantity: __, base unit: __}
-    # aggregated_ingredients = {}
+    aggregated_ingredients = {}
 
     for recipe_id in recipe_ids:
         all_rec = db.session.query(Recipe.recipe_id).all()
@@ -87,7 +87,11 @@ def show_shopping_list():
                                      )
             db.session.add(selected_recipe)
         
-        # for ingredient in recipe['extendedIngredients']:
+        for ingredient in recipe['extendedIngredients']:
+            if ingredient['name'] not in aggregated_ingredients:
+                aggregated_ingredients[ingredient['name']] = {'quantity': ingredient['amount'], 'unit': ingredient['unit']}
+            else:
+                aggregated_ingredients[ingredient['name']]['quantity'] += ingredient['amount']
 
     #         all_ing = db.session.query(Ingredient.ingredient_id).all()
     #         if (int(ingredient['id']),) not in all_ing:
@@ -117,10 +121,7 @@ def show_shopping_list():
     #                          .group_by(Ingredient.ingredient_unit, Ingredient.ingredient_name)
     #                          .order_by(Ingredient.ingredient_name)).all()
 
-    # dummy ingredients for testing
-    ingredients = [(2, 'ounces', 'onions'), (1, 'pound', 'chicken')]
-
-    return render_template("shopping.html", ingredients=ingredients)
+    return render_template("shopping.html", ingredients=aggregated_ingredients)
 
 
 

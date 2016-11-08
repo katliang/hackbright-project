@@ -8,8 +8,8 @@
 
 <p>List of Ingredients:</p>
     <ul>
-    {% for quantity, unit, name in ingredients %}
-        <li>{{ quantity }} {{ unit }} {{ name }}</li>
+    {% for ingredient in ingredients.items() %}
+        <li>{{ ingredient[1]['quantity'] }} {{ ingredient[1]['unit'] }} {{ ingredient[0] }}</li>
     {% endfor %}
     </ul>
 
