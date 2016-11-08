@@ -34,20 +34,57 @@ class Recipe(db.Model):
     __tablename__ = 'recipes'
 
     recipe_id = db.Column(db.Integer, primary_key=True)
-    recipe_name = db.Column(db.String(100), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+
+    # Define relationship to users table
+    user = db.relationship("User", backref=db.backref('recipes'))
 
     def __repr__(self):
         """ Provide helpful representation when printed."""
 
-        return '<Recipe recipe_id=%s recipe_name=%s user_id=%s>' % (self.recipe_id,
-                                                                    self.recipe_name,
-                                                                    self.user_id,
-                                                                    )
+        return '<Recipe recipe_id=%s user_id=%s>' % (self.recipe_id,
+                                                     self.user_id,
+                                                     )
+
+
+class ShoppingList(db.Model):
+    """Shopping list data."""
+
+    __tablename__ = 'shopping_lists'
+
+    list_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
 
     # Define relationship to users table
-    user = db.relationship("User", backref=db.backref("recipes"))
+    user = db.relationship("User", backref=db.backref('shopping_lists'))
 
+    # Define relationship to ingredients table
+    ingredients = db.relationship("Ingredient",
+                                  secondary='shopping_list_ingredients',
+                                  backref='shopping_lists')
+
+    def __repr__(self):
+        """ Provide helpful representation when printed."""
+
+        return '<ShoppingList list_id=%s user_id=%s>' % (self.list_id,
+                                                         self.user_id,
+                                                         )
+
+
+class ListIngredient(db.Model):
+    """Shopping list ingredient data."""
+
+    __tablename__ = 'shopping_list_ingredients'
+
+    list_ingredient_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    shopping_list_id = db.Column(db.Integer, db.ForeignKey('shopping_lists.list_id'), nullable=False)
+    ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredients.ingredient_id'), nullable=False)
+
+    def __repr__(self):
+        """ Provide helpful representation when printed."""
+
+        return '<ListIngredient list_ingredient_id=%s>' % (self.list_ingredient_id,
+                                                           )
 
 class Ingredient(db.Model):
     """ Ingredient data."""
@@ -56,41 +93,17 @@ class Ingredient(db.Model):
 
     ingredient_id = db.Column(db.Integer, primary_key=True)
     ingredient_name = db.Column(db.String(100), nullable=False)
-    ingredient_unit = db.Column(db.String(20), nullable=True)
+    base_unit = db.Column(db.String(20), nullable=True)
+    aggregate_quantity = db.Column(db.Float, nullable=False)
+
 
     def __repr__(self):
         """ Provide helpful representation when printed."""
 
-        return '<Ingredient ingredient_id=%s ingredient_name=%s ingredient_unit=%s>' % (self.ingredient_id,
-                                                                                        self.ingredient_name,
-                                                                                        self.ingredient_unit,
-                                                                                        )
-
-
-class RecipeIngredient(db.Model):
-    """ Recipe ingredients data."""
-
-    __tablename__ = 'recipe_ingredients'
-
-    recipe_ingredient_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.recipe_id'), nullable=False)
-    ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredients.ingredient_id'), nullable=False)
-    quantity = db.Column(db.Float, nullable=False)
-
-    def __repr__(self):
-        """ Provide helpful representation when printed."""
-
-        return '<RecipeIngredient recipe_ingredient_id=%s recipe_id=%s ingredient_id=%s quantity=%s>' % (self.recipe_ingredient_id,
-                                                                                                         self.recipe_id,
-                                                                                                         self.ingredient_id,
-                                                                                                         self.quantity,
-                                                                                                         )
-
-    # Define relationship to recipes table
-    recipe = db.relationship("Recipe", backref=db.backref("recipe_ingredients"))
-
-    # Define relationship to ingredients table
-    ingredient = db.relationship("Ingredient", backref=db.backref("recipe_ingredients"))
+        return '<Ingredient ingredient_name=%s base_unit=%s aggregate_quantity=%s>' % (self.ingredient_name,
+                                                                                       self.base_unit,
+                                                                                       self.aggregate_quantity,
+                                                                                      )
 
 
 """ Helper functions for applications. """
@@ -162,6 +175,15 @@ def recipe_info_by_id(recipe_id):
     recipe_response = call_api(get_recipe_url)
 
     return recipe_response.body
+
+def determine_base_unit(input_unit):
+    """Takes in a unit measurement and returns the base unit."""
+
+    if input_unit.lower() in ['lb', 'pounds', 'pound']:
+        return 'ounces'
+    else:
+        if input_unit.lower() in ['tbsp', 'tablespoons', 'tsp', 'teaspoons']:
+            return 'teaspoons'
 
 
 if __name__ == "__main__":

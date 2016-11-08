@@ -14,7 +14,9 @@
         <b>Recipe Name: {{ recipe['title'] }}</b><input type="checkbox" name="recipeid" value="{{ recipe['id'] }}"><br>
         Ready in {{ recipe['readyInMinutes'] }} minutes<br>
         <img src="{{ recipe['image'] }}"><br>
-        via <a href="{{ recipe['sourceUrl'] }}">{{ recipe['sourceName'] }}</a><br><br>
+        {% if recipe['sourceName'] %}
+            via <a href="{{ recipe['sourceUrl'] }}">{{ recipe['sourceName'] }}</a><br><br>
+        {% endif %}
 
         Ingredients:<br>
         {% for ingredient in recipe['extendedIngredients'] %}

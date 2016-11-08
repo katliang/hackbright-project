@@ -2,11 +2,12 @@
 
 from flask import Flask, render_template, request, session
 from flask_debugtoolbar import DebugToolbarExtension
-from model import search_recipes, recipe_info_by_id
+from model import search_recipes, recipe_info_by_id, determine_base_unit
 from model import User
 from model import Recipe
+from model import ShoppingList
+from model import ListIngredient
 from model import Ingredient
-from model import RecipeIngredient
 from model import connect_to_db, db
 from jinja2 import StrictUndefined
 from sqlalchemy.sql import func
@@ -72,46 +73,54 @@ def show_shopping_list():
 
     recipe_ids = request.form.getlist("recipeid")
 
+    # dictionary for multiple recipes selected
+    # key: ingredient name
+    # value: {quantity: __, base unit: __}
+    # aggregated_ingredients = {}
+
     for recipe_id in recipe_ids:
         all_rec = db.session.query(Recipe.recipe_id).all()
         recipe = recipe_info_by_id(recipe_id)
         if (int(recipe['id']),) not in all_rec:  
             selected_recipe = Recipe(recipe_id=int(recipe['id']),
-                                     recipe_name=str(recipe['title'].encode('utf-8')),
                                      user_id=int(session['user_id']),
                                      )
             db.session.add(selected_recipe)
         
-        for ingredient in recipe['extendedIngredients']:
-            all_ing = db.session.query(Ingredient.ingredient_id).all()
-            if (int(ingredient['id']),) not in all_ing:
-                recipe_ingredient = Ingredient(ingredient_id=int(ingredient['id']),
-                                               ingredient_name=str(ingredient['name']),
-                                               ingredient_unit=str(ingredient['unit']),
-                                               )
-                db.session.add(recipe_ingredient)
+        # for ingredient in recipe['extendedIngredients']:
 
-            recipe_quantity = RecipeIngredient(recipe_id=int(recipe['id']),
-                                               ingredient_id=int(ingredient['id']),
-                                               quantity=float(ingredient['amount']),
-                                               )
-            db.session.add(recipe_quantity)
+    #         all_ing = db.session.query(Ingredient.ingredient_id).all()
+    #         if (int(ingredient['id']),) not in all_ing:
 
-    db.session.commit()
+    #             base_unit = determine_base_unit(str(ingredient['unit'])
+    #             recipe_ingredient = Ingredient(ingredient_id=int(ingredient['id']),
+    #                                            ingredient_name=str(ingredient['name']),
+    #                                            ingredient_unit=base_unit),
+    #                                            )
+    #             db.session.add(recipe_ingredient)
 
-    recipes = db.session.query(Recipe.recipe_name).filter(User.user_id == session['user_id']).all()
+    #         recipe_quantity = RecipeIngredient(recipe_id=int(recipe['id']),
+    #                                            ingredient_id=int(ingredient['id']),
+    #                                            quantity=float(ingredient['amount']),
+    #                                            )
+    #         db.session.add(recipe_quantity)
 
-    ingredients = (db.session.query(func.sum(RecipeIngredient.quantity).label('quantities'),
-                                    Ingredient.ingredient_unit,
-                                    Ingredient.ingredient_name)
-                             .join(Ingredient)
-                             .join(Recipe)
-                             .join(User)
-                             .filter(User.user_id == session['user_id'])
-                             .group_by(Ingredient.ingredient_unit, Ingredient.ingredient_name)
-                             .order_by(Ingredient.ingredient_name)).all()
+    # db.session.commit()
 
-    return render_template("shopping.html", ingredients=ingredients, recipes=recipes)
+    # ingredients = (db.session.query(func.sum(RecipeIngredient.quantity),
+    #                                 Ingredient.ingredient_unit,
+    #                                 Ingredient.ingredient_name)
+    #                          .join(Ingredient)
+    #                          .join(Recipe)
+    #                          .join(User)
+    #                          .filter(User.user_id == session['user_id'])
+    #                          .group_by(Ingredient.ingredient_unit, Ingredient.ingredient_name)
+    #                          .order_by(Ingredient.ingredient_name)).all()
+
+    # dummy ingredients for testing
+    ingredients = [(2, 'ounces', 'onions'), (1, 'pound', 'chicken')]
+
+    return render_template("shopping.html", ingredients=ingredients)
 
 
 
