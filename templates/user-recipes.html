@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}User's Recipes{% endblock %}
+
+{% block content %}
+
+<h2>User's Recipes</h2>
+
+<p>{% for recipe in user_recipes %}</p>
+    {{ recipe[0] }}<br>
+    {% endfor %}
+
+<p><a href="/search">Search for More Recipes</a></p>
+
+<form action="/shopping_list" method="POST">
+Show Shopping List?<input type="submit" value="YES"><br>
+
+{% endblock %}

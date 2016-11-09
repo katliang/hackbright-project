@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Inventory{% endblock %}
+{% block title %}Search{% endblock %}
 
 {% block content %}
 
@@ -40,8 +40,7 @@
                 <input type="checkbox" name="intolerances" value="Sulfite">Sulfite<br>
                 <input type="checkbox" name="intolerances" value="treenut">Tree Nut<br>
                 <input type="checkbox" name="intolerances" value="wheat">Wheat<br><br>
-            Number of Results: <input type="number" name="numresults"><br>
-            Search word: <input type="text" name="query"><br>
+            Search keyword(s): <input type="text" name="query"><br>
             <input type="submit" value="Find New Recipe(s)">
         </form>
     {% endif %}

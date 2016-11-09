@@ -58,11 +58,6 @@ class ShoppingList(db.Model):
     # Define relationship to users table
     user = db.relationship("User", backref=db.backref('shopping_lists'))
 
-    # Define relationship to ingredients table
-    ingredients = db.relationship("Ingredient",
-                                  secondary='shopping_list_ingredients',
-                                  backref='shopping_lists')
-
     def __repr__(self):
         """ Provide helpful representation when printed."""
 
@@ -79,12 +74,21 @@ class ListIngredient(db.Model):
     list_ingredient_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     shopping_list_id = db.Column(db.Integer, db.ForeignKey('shopping_lists.list_id'), nullable=False)
     ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredients.ingredient_id'), nullable=False)
+    aggregate_quantity = db.Column(db.Float, nullable=False)
+
+    # Define relationship to shopping_lists table
+    shopping_list = db.relationship("ShoppingList", backref=db.backref('shopping_list_ingredients'))
+
+    # Define relationship to ingredients table
+    ingredient = db.relationship("Ingredient", backref=db.backref('shopping_list_ingredients'))
 
     def __repr__(self):
         """ Provide helpful representation when printed."""
 
-        return '<ListIngredient list_ingredient_id=%s>' % (self.list_ingredient_id,
-                                                           )
+        return '<ListIngredient ingredient_id=%s aggregate_quantity=%s>' % (self.ingredient_id,
+                                                                            self.aggregate_quantity,
+                                                                            )
+
 
 class Ingredient(db.Model):
     """ Ingredient data."""
@@ -94,16 +98,14 @@ class Ingredient(db.Model):
     ingredient_id = db.Column(db.Integer, primary_key=True)
     ingredient_name = db.Column(db.String(100), nullable=False)
     base_unit = db.Column(db.String(20), nullable=True)
-    aggregate_quantity = db.Column(db.Float, nullable=False)
 
 
     def __repr__(self):
         """ Provide helpful representation when printed."""
 
-        return '<Ingredient ingredient_name=%s base_unit=%s aggregate_quantity=%s>' % (self.ingredient_name,
-                                                                                       self.base_unit,
-                                                                                       self.aggregate_quantity,
-                                                                                      )
+        return '<Ingredient ingredient_name=%s base_unit=%s>' % (self.ingredient_name,
+                                                                 self.base_unit,
+                                                                 )
 
 
 """ Helper functions for applications. """
@@ -144,7 +146,7 @@ def search_by_ingredient(search_word):
     return response.body
 
 
-def search_recipes(diet, intolerances, numresults, query):
+def search_recipes(diet, intolerances, query):
     """ Searches for recipes and returns a list of recipe information.
 
     Takes in strings for diet, intolerances and query, and an integer for numresults.
@@ -154,7 +156,7 @@ def search_recipes(diet, intolerances, numresults, query):
     result_ids = []
     result_recipe_info = []
 
-    search_url = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?diet=" + diet + "&intolerances=" + intolerances + "&number=" + numresults + "&query=" + query
+    search_url = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?diet=" + diet + "&intolerances=" + intolerances + "&number=2&query=" + query
 
     response = call_api(search_url)
 
@@ -176,14 +178,17 @@ def recipe_info_by_id(recipe_id):
 
     return recipe_response.body
 
-def determine_base_unit(input_unit):
-    """Takes in a unit measurement and returns the base unit."""
+def convert_to_base_unit(amount, input_unit):
+    """Takes in an amount and unit and returns the converted quantity and base unit."""
 
     if input_unit.lower() in ['lb', 'pounds', 'pound']:
-        return 'ounces'
+        new_amount = amount * 16.00
+        return (new_amount, 'ounces')
+    elif input_unit.lower() in ['tbsp', 'tablespoons', 'tbs', 'tbsps']:
+        new_amount = amount * 3.00
+        return (new_amount, 'teaspoons')
     else:
-        if input_unit.lower() in ['tbsp', 'tablespoons', 'tsp', 'teaspoons']:
-            return 'teaspoons'
+        return (amount, input_unit)
 
 
 if __name__ == "__main__":

@@ -8,13 +8,13 @@
 
 <p>Select Recipe(s) You Want to Cook:</p>
 
-<p><form action="/shopping_list" method="POST">
+<p><form action="/user-recipes" method="POST">
 
     {% for recipe in recipe_info %}
         <b>Recipe Name: {{ recipe['title'] }}</b><input type="checkbox" name="recipeid" value="{{ recipe['id'] }}"><br>
         Ready in {{ recipe['readyInMinutes'] }} minutes<br>
         <img src="{{ recipe['image'] }}"><br>
-        {% if recipe['sourceName'] %}
+        {% if 'sourceName' in recipe %}
             via <a href="{{ recipe['sourceUrl'] }}">{{ recipe['sourceName'] }}</a><br><br>
         {% endif %}
 
@@ -23,7 +23,8 @@
             {{ ingredient['amount'] }} {{ ingredient['unit'] }} {{ ingredient['name'] }}<br>
         {% endfor %}<br>
     {% endfor %}
-    Add Ingredients to Your Shopping List? <input type="submit" value="YES">
+    Add Recipe(s)<input type="submit" value="YES"><br>
+    </form>
 </p>
 
 

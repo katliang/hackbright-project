@@ -8,11 +8,9 @@
 
 <p>List of Ingredients:</p>
     <ul>
-    {% for ingredient in ingredients.items() %}
-        <li>{{ ingredient[1]['quantity'] }} {{ ingredient[1]['unit'] }} {{ ingredient[0] }}</li>
+    {% for amount, unit, name in ingredients %}
+        <li>{{ amount }} {{ unit }} {{ name }}</li>
     {% endfor %}
     </ul>
-
-<p><a href="/inventory">Search for More Recipes</a></p>
 
 {% endblock %}
