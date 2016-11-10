@@ -32,11 +32,6 @@ def homepage():
 def show_search_form():
     """ Display user's current ingredients."""
 
-    # if user is searching again for recipes, session is still active
-    if session['user_id']:
-        current_ingredients = []
-        return render_template("search.html", current_ingredients=current_ingredients)
-
     username = request.form.get("username")
     password = request.form.get("password")
 
@@ -49,6 +44,11 @@ def show_search_form():
         return render_template("search.html", current_ingredients=current_ingredients)
     else:
         return render_template("/homepage.html")
+
+    # if user is searching again for recipes, session is still active
+    if session['user_id']:
+        current_ingredients = []
+        return render_template("search.html", current_ingredients=current_ingredients)
 
 
 @app.route("/recipes")
@@ -64,6 +64,7 @@ def show_matching_recipes():
     recipe_info = search_recipes(diet, intolerances, query)
 
     return render_template("recipes.html", recipe_info=recipe_info)
+
 
 @app.route("/user-recipes", methods=["POST"])
 def show_user_recipes():
@@ -143,6 +144,15 @@ def show_shopping_list():
                                   .order_by(Ingredient.ingredient_name)).all()
     
     return render_template("shopping.html", ingredients=user_ingredients)
+
+
+@app.route("/logout")
+def logs_user_out():
+    """ Logs out user."""
+
+    session.pop('user_id', None)
+    
+    return render_template("/logout.html")
 
 
 if __name__ == "__main__":
