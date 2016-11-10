@@ -23,8 +23,17 @@
             {{ ingredient['amount'] }} {{ ingredient['unit'] }} {{ ingredient['name'] }}<br>
         {% endfor %}<br>
     {% endfor %}
-    Add Recipe(s)<input type="submit" value="YES"><br>
-    </form>
+    <input type="submit" value="Add Selected Recipe(s)" id="submit">
+    </form><br>
+
+    <form action="/search" method="GET">
+        <input type="submit" value="Search for More recipes">
+    </form><br>
+    
+    <form action="/shopping_list" method="POST">
+        <input type="submit" value="Generate Shopping List">
+    </form><br>
+    
 </p>
 
 <script src="https://code.jquery.com/jquery.js"></script>

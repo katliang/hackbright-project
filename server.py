@@ -69,7 +69,7 @@ def show_matching_recipes():
 def show_user_recipes():
     """Keeps track of selected recipes."""
 
-    recipe_ids = request.form.getlist("recipe_ids")
+    recipe_ids = request.form.getlist("recipe_ids[]")
 
     for recipe_id in recipe_ids:
         recipe = db.session.query(Recipe).filter(Recipe.user_id == session['user_id'], Recipe.recipe_id == recipe_id).first()

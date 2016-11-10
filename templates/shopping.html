@@ -9,7 +9,7 @@
 <p>List of Ingredients:</p>
     <ul>
     {% for amount, unit, name in ingredients %}
-        <li>{{ amount }} {{ unit }} {{ name }}</li>
+        <li>{{ '%0.2f' % amount|float }} {{ unit }} {{ name }}</li>
     {% endfor %}
     </ul>
 
