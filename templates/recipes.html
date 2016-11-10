@@ -8,7 +8,7 @@
 
 <p>Select Recipe(s) You Want to Cook:</p>
 
-<p><form action="/user-recipes" method="POST">
+<p><form action="/user-recipes" method="POST" id="recipes">
 
     {% for recipe in recipe_info %}
         <b>Recipe Name: {{ recipe['title'] }}</b><input type="checkbox" name="recipeid" value="{{ recipe['id'] }}"><br>
@@ -27,5 +27,7 @@
     </form>
 </p>
 
+<script src="https://code.jquery.com/jquery.js"></script>
+<script src="/static/js/project.js"></script>
 
 {% endblock %}

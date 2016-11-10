@@ -1,6 +1,6 @@
 """ Flask site for project app."""
 
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from model import search_recipes, recipe_info_by_id, convert_to_base_unit
 from model import User
@@ -69,7 +69,7 @@ def show_matching_recipes():
 def show_user_recipes():
     """Keeps track of selected recipes."""
 
-    recipe_ids = request.form.getlist("recipeid")
+    recipe_ids = request.form.getlist("recipe_ids")
 
     for recipe_id in recipe_ids:
         recipe = db.session.query(Recipe).filter(Recipe.user_id == session['user_id'], Recipe.recipe_id == recipe_id).first()
@@ -81,8 +81,14 @@ def show_user_recipes():
             db.session.commit()
 
     all_user_recipes = db.session.query(Recipe.recipe_id).filter(Recipe.user_id == session['user_id']).all()
+    
+    recipe_dict = {}
+    recipe_dict['id'] = []
 
-    return render_template("/user-recipes.html", user_recipes=all_user_recipes)
+    for recipe in all_user_recipes:
+        recipe_dict['id'].append(recipe[0])
+
+    return jsonify(recipe_dict)
 
 
 @app.route("/shopping_list", methods=["POST"])
