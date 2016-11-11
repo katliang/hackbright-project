@@ -22,7 +22,3 @@ if __name__ == "__main__":
 
     # Create tables if they haven't been created already
     db.create_all()
-
-    # Loads test user data
-    load_test_users()
-
