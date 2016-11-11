@@ -1,6 +1,6 @@
 """ Flask site for project app."""
 
-from flask import Flask, render_template, request, session, jsonify
+from flask import Flask, render_template, request, session, jsonify, flash, redirect
 from flask_debugtoolbar import DebugToolbarExtension
 from model import search_recipes, recipe_info_by_id, convert_to_base_unit
 from model import User
@@ -30,9 +30,35 @@ def homepage():
     return render_template("homepage.html")
 
 
+@app.route("/register", methods=["GET"])
+def registration_form():
+    """ Show registration form."""
+
+    return render_template("registration.html")
+
+
+@app.route("/register", methods=["POST"])
+def register_process():
+    """ Verify registration."""
+
+    username = request.form.get("username")
+    password = request.form.get("password")
+
+    check_user = User.query.filter(User.username == username).first()
+
+    if check_user:
+        flash('This username already exists. Please choose another username.')
+        return redirect("/register")
+    else:
+        new_user = User(username=username, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect("/login")
+
+
 @app.route("/search", methods=["POST"])
 def show_search_form():
-    """ Display user's current ingredients."""
+    """ Display search form."""
 
     username = request.form.get("username")
     password = request.form.get("password")
@@ -45,7 +71,7 @@ def show_search_form():
         current_ingredients = []
         return render_template("search.html", current_ingredients=current_ingredients)
     else:
-        return render_template("/homepage.html")
+        return render_template("homepage.html")
 
 
 @app.route("/search", methods=["GET"])
@@ -57,7 +83,7 @@ def redisplay_search_form():
         current_ingredients = []
         return render_template("search.html", current_ingredients=current_ingredients)
     else:
-        return render_template("/homepage.html")
+        return render_template("homepage.html")
 
 
 @app.route("/recipes")
