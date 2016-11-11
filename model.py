@@ -3,6 +3,7 @@
 from flask_sqlalchemy import SQLAlchemy
 import unirest
 import os
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # This is the connection to the PostgreSQL database; we're getting this through
 # the Flask-SQLAlchemy helper library. On this, we can find the `session`
@@ -17,7 +18,13 @@ class User(db.Model):
 
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     username = db.Column(db.String(50), nullable=False, unique=True)
-    password = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
     def __repr__(self):
         """ Provide helpful representation when printed."""
@@ -147,6 +154,13 @@ class Inventory(db.Model):
 
 
 """ Helper functions for applications. """
+
+def set_password(self, password):
+        self.pw_hash = generate_password_hash(password)
+
+
+def check_password(self, password):
+        return check_password_hash(self.pw_hash, password)
 
 
 def connect_to_db(app):

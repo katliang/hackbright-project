@@ -50,7 +50,8 @@ def register_process():
         flash('This username already exists. Please choose another username.')
         return redirect("/register")
     else:
-        new_user = User(username=username, password=password)
+        new_user = User(username=username, password="")
+        new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
         return redirect("/login")
@@ -70,12 +71,17 @@ def login_process():
     username = request.form.get("username")
     password = request.form.get("password")
 
-    check_user = User.query.filter(User.username == username, User.password == password).first()
+    check_user = User.query.filter(User.username == username).first()
 
     if check_user:
-        session['user_id'] = check_user.user_id
-        flash("You are logged in")
-        return redirect("/search")
+        check_password = check_user.check_password(password)
+        if check_password:
+            session['user_id'] = check_user.user_id
+            flash("You are logged in")
+            return redirect("/search")
+        else:
+            flash("Incorrect username and/or password. Please try again.")
+            return redirect("/login")
     else:
         flash("Incorrect username and/or password. Please try again.")
         return redirect("/login")
