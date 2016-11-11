@@ -56,9 +56,16 @@ def register_process():
         return redirect("/login")
 
 
-@app.route("/search", methods=["POST"])
-def show_search_form():
-    """ Display search form."""
+@app.route("/login", methods=["GET"])
+def login_form():
+    """ Show login form."""
+
+    return render_template("login.html")
+
+
+@app.route("/login", methods=["POST"])
+def login_process():
+    """ Verify login."""
 
     username = request.form.get("username")
     password = request.form.get("password")
@@ -66,16 +73,16 @@ def show_search_form():
     check_user = User.query.filter(User.username == username, User.password == password).first()
 
     if check_user:
-        # user begins with no inventory
         session['user_id'] = check_user.user_id
-        current_ingredients = []
-        return render_template("search.html", current_ingredients=current_ingredients)
+        flash("You are logged in")
+        return redirect("/search")
     else:
-        return render_template("homepage.html")
+        flash("Incorrect username and/or password. Please try again.")
+        return redirect("/login")
 
 
-@app.route("/search", methods=["GET"])
-def redisplay_search_form():
+@app.route("/search")
+def display_search_form():
     """ Display user's current ingredients."""
 
     # if user is searching again for recipes, session is still active
