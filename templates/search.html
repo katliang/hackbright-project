@@ -4,7 +4,12 @@
 
 {% block content %}
 
-<h2>Fridge Inventory</h2>
+<p>{% if pending_shopping_lists %}
+    <p>Pending Shopping Lists to Confirm:</p>
+        {% for shopping_list in pending_shopping_lists %}
+            <a href="/confirm_list"> List: {{ shopping_list.list_id}}</a><br>
+        {% endfor %}
+    {% endif %}</p>
 
 <p>{% if current_ingredients %}
     <p>Select the Ingredients You Want to Use:</p>
@@ -17,7 +22,8 @@
         </form>
 
     {% else %}
-    <p>You Currently Have No Ingredients! Search Below to Find a Recipe:</p>
+    <p>You Have No Inventory!</p>
+    <p>Search Below to Find a New Recipe:</p>
         <form action="/recipes">
             Diet Restrictions: 
                 <select name="diet">

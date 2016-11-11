@@ -94,7 +94,10 @@ def display_search_form():
     # if user is searching again for recipes, session is still active
     if 'user_id' in session:
         current_ingredients = []
-        return render_template("search.html", current_ingredients=current_ingredients)
+
+        pending_shopping_lists = ShoppingList.query.filter(ShoppingList.has_shopped == False, ShoppingList.user_id == session['user_id']).all()
+
+        return render_template("search.html", current_ingredients=current_ingredients, pending_shopping_lists=pending_shopping_lists)
     else:
         return render_template("homepage.html")
 

@@ -155,13 +155,6 @@ class Inventory(db.Model):
 
 """ Helper functions for applications. """
 
-def set_password(self, password):
-        self.pw_hash = generate_password_hash(password)
-
-
-def check_password(self, password):
-        return check_password_hash(self.pw_hash, password)
-
 
 def connect_to_db(app):
     """ Connect the database to our Flask app."""
