@@ -4,10 +4,12 @@ from flask import Flask, render_template, request, session, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from model import search_recipes, recipe_info_by_id, convert_to_base_unit
 from model import User
+from model import UserRecipe
 from model import Recipe
 from model import ShoppingList
 from model import ListIngredient
 from model import Ingredient
+from model import Inventory
 from model import connect_to_db, db
 from jinja2 import StrictUndefined
 from sqlalchemy.sql import func
@@ -28,7 +30,7 @@ def homepage():
     return render_template("homepage.html")
 
 
-@app.route("/search", methods=["GET", "POST"])
+@app.route("/search", methods=["POST"])
 def show_search_form():
     """ Display user's current ingredients."""
 
@@ -45,10 +47,17 @@ def show_search_form():
     else:
         return render_template("/homepage.html")
 
+
+@app.route("/search", methods=["GET"])
+def redisplay_search_form():
+    """ Display user's current ingredients."""
+
     # if user is searching again for recipes, session is still active
-    if session['user_id']:
+    if 'user_id' in session:
         current_ingredients = []
         return render_template("search.html", current_ingredients=current_ingredients)
+    else:
+        return render_template("/homepage.html")
 
 
 @app.route("/recipes")
@@ -73,15 +82,21 @@ def show_user_recipes():
     recipe_ids = request.form.getlist("recipe_ids[]")
 
     for recipe_id in recipe_ids:
-        recipe = db.session.query(Recipe).filter(Recipe.user_id == session['user_id'], Recipe.recipe_id == recipe_id).first()
+        recipe = db.session.query(UserRecipe).filter(UserRecipe.user_id == session['user_id'], UserRecipe.recipe_id == recipe_id).first()
         if not recipe:
             new_recipe = Recipe(recipe_id=recipe_id,
-                                user_id=session['user_id'],
                                 )
             db.session.add(new_recipe)
-            db.session.commit()
 
-    all_user_recipes = db.session.query(Recipe.recipe_id).filter(Recipe.user_id == session['user_id']).all()
+        new_user_recipe = UserRecipe(user_id=session['user_id'],
+                                     recipe_id=recipe_id,
+                                     status='need_ingredients',
+                                     )
+        db.session.add(new_user_recipe)
+
+    db.session.commit()
+
+    all_user_recipes = db.session.query(UserRecipe.recipe_id).filter(UserRecipe.user_id == session['user_id']).filter(UserRecipe.status == 'need_ingredients').all()
     
     recipe_dict = {}
     recipe_dict['id'] = []
@@ -96,8 +111,9 @@ def show_user_recipes():
 def show_shopping_list():
     """Display shopping list of missing ingredients."""
 
-    all_user_recipes = db.session.query(Recipe.recipe_id).filter(Recipe.user_id == session['user_id']).all()
+    all_user_recipes = db.session.query(UserRecipe.recipe_id).filter(UserRecipe.user_id == session['user_id']).all()
     new_shopping_list = ShoppingList(user_id=session['user_id'],
+                                     has_shopped=False,
                                     )
     db.session.add(new_shopping_list)
     db.session.commit()
@@ -151,7 +167,7 @@ def logs_user_out():
     """ Logs out user."""
 
     session.pop('user_id', None)
-    
+
     return render_template("/logout.html")
 
 
