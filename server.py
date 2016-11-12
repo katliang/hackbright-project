@@ -117,7 +117,7 @@ def show_matching_recipes():
     return render_template("recipes.html", recipe_info=recipe_info)
 
 
-@app.route("/user-recipes", methods=["POST"])
+@app.route("/user-recipes.json", methods=["POST"])
 def show_user_recipes():
     """Keeps track of selected recipes."""
 
