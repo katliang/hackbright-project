@@ -7,7 +7,7 @@
 <p>{% if pending_shopping_lists %}
     <p>Pending Shopping Lists to Confirm:</p>
         {% for shopping_list in pending_shopping_lists %}
-            <a href="/confirm_list"> List: {{ shopping_list.list_id}}</a><br>
+            <a href="/confirm_list/{{ shopping_list.list_id}}"> List #{{ shopping_list.list_id}}</a><br>
         {% endfor %}
     {% endif %}</p>
 

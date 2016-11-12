@@ -204,6 +204,22 @@ def show_shopping_list():
     return render_template("shopping.html", ingredients=user_ingredients)
 
 
+@app.route("/confirm_list/<shopping_list_id>")
+def confirm_purchases(shopping_list_id):
+
+    list_ingredients = ListIngredient.query.filter(ListIngredient.shopping_list_id == shopping_list_id).all()
+
+    all_ingredients = []
+
+    for ingredient in list_ingredients:
+        ingredient_qty = ingredient.aggregate_quantity
+        ingredient_unit = ingredient.ingredient.base_unit
+        ingredient_name = ingredient.ingredient.ingredient_name
+        all_ingredients.append((ingredient_qty, ingredient_unit, ingredient_name))
+
+    return render_template("list_confirmation.html", ingredients=all_ingredients)
+
+
 @app.route("/logout")
 def logs_user_out():
     """ Logs out user."""

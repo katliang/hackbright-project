@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Shopping List{% endblock %}
+
+{% block content %}
+
+<h2>Shopping List</h2>
+
+    <p>{% for (qty, unit, name) in ingredients %}</p>
+        <form>
+            {{ qty }} {{ unit }} {{ name }}
+            <input type="checkbox" name="ingredient" value="{{ name }}" id="ingredient">
+            <div></div>
+        {% endfor %}<br>
+            <input type="submit" value="Confirm Purchases" id="submit">
+        </form>
+
+<p><a href="/search">Go back to mainpage</a></p>
+{% endblock %}
