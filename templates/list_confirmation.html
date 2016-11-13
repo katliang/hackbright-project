@@ -4,16 +4,30 @@
 
 {% block content %}
 
-<h2>Shopping List</h2>
+<h2>Shopping List {{ shopping_list_id }}</h2>
 
-    <p>{% for (qty, unit, name) in ingredients %}</p>
-        <form>
-            {{ qty }} {{ unit }} {{ name }}
-            <input type="checkbox" name="ingredient" value="{{ name }}" id="ingredient">
-            <div></div>
+    <p>When purchased, check item and enter amount purchased.</p>
+
+    <p>{% for (ingredient_id, ingredient_qty, ingredient_unit, ingredient_name) in ingredients %}</p>
+        <form action="/inventory" method="POST" id="shopping_list">
+            {{ ingredient_qty }} {{ ingredient_unit }} {{ ingredient_name }}
+            <input type="checkbox" name="ingredient" class="checkbox" data-ingredient-id="{{ ingredient_id }}" data-ingredient-name="{{ ingredient_name }}">
+
+            <input type="number" step="0.01" name="quantity" class="quantity">
+
+            <select name="unit" class="unit">
+                    <option value="none"> </option><br>
+                    <option value="ounces">ounces</option><br>
+                    <option value="pounds">pounds</option><br>
+                    <option value="cups">cups</option><br>
+                    <option value="servings">serving(s)</option><br>
+            </select>
         {% endfor %}<br>
+            <input type="hidden" name="list-id" id="list-id" value="{{ shopping_list_id }}">
             <input type="submit" value="Confirm Purchases" id="submit">
         </form>
 
 <p><a href="/search">Go back to mainpage</a></p>
+
+<script src="/static/js/list-confirmation.js"></script>
 {% endblock %}

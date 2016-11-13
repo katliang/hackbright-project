@@ -212,12 +212,27 @@ def confirm_purchases(shopping_list_id):
     all_ingredients = []
 
     for ingredient in list_ingredients:
+        ingredient_id = ingredient.ingredient_id
         ingredient_qty = ingredient.aggregate_quantity
         ingredient_unit = ingredient.ingredient.base_unit
         ingredient_name = ingredient.ingredient.ingredient_name
-        all_ingredients.append((ingredient_qty, ingredient_unit, ingredient_name))
+        all_ingredients.append((ingredient_id, ingredient_qty, ingredient_unit, ingredient_name))
 
-    return render_template("list_confirmation.html", ingredients=all_ingredients)
+    return render_template("list_confirmation.html", ingredients=all_ingredients, shopping_list_id=shopping_list_id)
+
+
+@app.route("/inventory", methods=["POST"])
+def add_inventory():
+    """ Adds purchased ingredients to inventory."""
+
+    pass
+
+    # Change status of shopping list since list has been used by user
+    # shopping_list = ShoppingList.query.filter(ShoppingList.list_id == shopping_list_id).one()
+    # shopping_list.has_shopped = True
+    # db.session.commit()
+
+    return redirect("/search")
 
 
 @app.route("/logout")
