@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Recipe Information{% endblock %}
+
+{% block content %}
+
+<h2>{{ recipe_details.title }}</h2>
+
+<p>Recipe courtesy of <a href="{{ recipe_details.sourceUrl }}">{{ recipe_details.sourceName }}</a>
+
+<p><img src="{{ recipe_details.image }}">
+
+<p>Total preparation time: {{ recipe_details.preparationMinutes }} minutes</p>
+<p>Ready in {{ recipe_details.readyInMinutes }} minutes</p>
+
+<p>Servings: {{ recipe_details.servings }}</p>
+
+<p>Ingredients:</p><br>
+    {% for ingredient in recipe_details.extendedIngredients %}
+        {{ ingredient.amount }} {{ ingredient.unit }} {{ ingredient.name }}<br>
+    {% endfor %}<br>
+
+<p>Directions:</p><br>
+{% if recipe_details.instructions %}
+    {{ recipe_details.instructions }}
+{% else %}
+    <p>Please see <a href="{{ recipe_details.sourceUrl }}">{{ recipe_details.sourceName }}</a> for more details.</p>
+{% endif %}<br>
+
+<p><button type="button" id="cook-recipe">Cook me!</button></p>
+
+<p>Want to cook this later? <a href="/search">Return to Main Page</a></p>
+
+{% endblock %}

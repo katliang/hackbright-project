@@ -16,7 +16,7 @@
 <h2>Selected Recipes to Cook:</h2>
     {% if pending_recipes_list %}
         {% for pending_recipe in pending_recipes_list %}
-            <a href="/confirm_recipe/{{ pending_recipe.title }}">{{ pending_recipe.title }}</a><br>
+            <a href="/confirm_recipe/{{ pending_recipe.id }}">{{ pending_recipe.title }}</a><br>
         {% endfor %}
     {% else %}
         <p>You Currently Have No Selected Recipes.</p>

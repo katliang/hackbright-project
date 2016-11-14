@@ -12,9 +12,7 @@ from model import Ingredient
 from model import Inventory
 from model import connect_to_db, db
 from jinja2 import StrictUndefined
-from sqlalchemy.sql import func
 import json
-
 import os
 
 app = Flask(__name__)
@@ -159,6 +157,14 @@ def show_user_recipes():
     db.session.commit()
 
     return jsonify({})
+
+
+@app.route("/confirm_recipe/<recipe_id>")
+def confirm_recipe_cooked(recipe_id):
+
+    recipe_details = recipe_info_by_id(recipe_id)
+
+    return render_template("recipe_info.html", recipe_details=recipe_details)
 
 
 @app.route("/shopping_list", methods=["POST"])
