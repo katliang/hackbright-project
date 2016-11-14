@@ -11,12 +11,14 @@ function makeRequired(evt) {
 $('.checkbox').on('change', makeRequired);
 
 
+function sendToMain(results) {
+    window.location.href="/search";
+}
+
 function getInventoryInfo(evt) {
-
+    evt.preventDefault();
+    var shoppingListId = $('#shopping_list').data('shopping-list-id')
     var inventory = {};
-
-    debugger;
-
     // if the checkbox is checked:
     $(':checkbox:checked').each(function() {
     // get the values from the next two fields
@@ -29,6 +31,8 @@ function getInventoryInfo(evt) {
         inventory[ingredientId]['ingredientQty'] = ingredientQty;
         inventory[ingredientId]['ingredientUnit'] = ingredientUnit;
     })
+
+    $.post("/inventory", {data: JSON.stringify(inventory), listId: shoppingListId}, sendToMain)
     }
 
 

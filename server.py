@@ -13,6 +13,7 @@ from model import Inventory
 from model import connect_to_db, db
 from jinja2 import StrictUndefined
 from sqlalchemy.sql import func
+import json
 
 import os
 
@@ -93,11 +94,21 @@ def display_search_form():
 
     # if user is searching again for recipes, session is still active
     if 'user_id' in session:
-        current_ingredients = []
+        current_ingredients = Inventory.query.filter(Inventory.user_id == session['user_id']).all()
+
+        current_ingredients_list = []
+
+        for ingredient in current_ingredients:
+            current_quantity = ingredient.current_quantity
+            base_unit = ingredient.ingredients.base_unit
+            ingredient_name = ingredient.ingredients.ingredient_name
+            current_ingredients_list.append((current_quantity, base_unit, ingredient_name))
 
         pending_shopping_lists = ShoppingList.query.filter(ShoppingList.has_shopped == False, ShoppingList.user_id == session['user_id']).all()
 
-        return render_template("search.html", current_ingredients=current_ingredients, pending_shopping_lists=pending_shopping_lists)
+        return render_template("search.html", current_ingredients=current_ingredients_list,
+                                              pending_shopping_lists=pending_shopping_lists,
+                                              )
     else:
         return render_template("homepage.html")
 
@@ -225,14 +236,25 @@ def confirm_purchases(shopping_list_id):
 def add_inventory():
     """ Adds purchased ingredients to inventory."""
 
-    pass
+    inventory = request.form.get("data")
+    inventory_dict = json.loads(inventory)
+    shopping_list_id = int(request.form.get("listId"))
+
+    # Add each ingredient to inventory list
+    for ingredient_id in inventory_dict:
+        new_inventory = Inventory(user_id=session['user_id'],
+                                  ingredient_id=int(ingredient_id),
+                                  current_quantity=int(inventory_dict[ingredient_id]['ingredientQty']),
+                                  )
+        db.session.add(new_inventory)
+    db.session.commit()
 
     # Change status of shopping list since list has been used by user
-    # shopping_list = ShoppingList.query.filter(ShoppingList.list_id == shopping_list_id).one()
-    # shopping_list.has_shopped = True
-    # db.session.commit()
+    shopping_list = ShoppingList.query.filter(ShoppingList.list_id == shopping_list_id).one()
+    shopping_list.has_shopped = True
+    db.session.commit()
 
-    return redirect("/search")
+    return jsonify({'success': True})
 
 
 @app.route("/logout")

@@ -4,53 +4,53 @@
 
 {% block content %}
 
-<p>{% if pending_shopping_lists %}
-    <p>Pending Shopping Lists to Confirm:</p>
+<h2>Pending Shopping Lists to Confirm:</h2>
+    {% if pending_shopping_lists %}
         {% for shopping_list in pending_shopping_lists %}
             <a href="/confirm_list/{{ shopping_list.list_id}}"> List #{{ shopping_list.list_id}}</a><br>
         {% endfor %}
-    {% endif %}</p>
-
-<p>{% if current_ingredients %}
-    <p>Select the Ingredients You Want to Use:</p>
-        <form action="/recipes">
-            {% for ingredient in current_ingredients %}
-                {{ ingredient }}<input type="checkbox" name="ingredient" 
-                                 value="{{ ingredient }}"><br>
-            {% endfor %}
-            <input type="submit" value="Find Recipe(s)">
-        </form>
-
     {% else %}
-    <p>You Have No Inventory!</p>
-    <p>Search Below to Find a New Recipe:</p>
-        <form action="/recipes">
-            Diet Restrictions: 
-                <select name="diet">
-                    <option value="none">None</option><br>
-                    <option value="pescetarian">Pescatarian</option><br>
-                    <option value="lactovegetarian">Lacto Vegetarian</option><br>
-                    <option value="ovovegetarian">Ovo vegetarian</option><br>
-                    <option value="vegan">Vegan</option><br>
-                    <option value="vegetarian">Vegetarian</option>
-                </select><br><br>
-            Intolerance(s): (Select all that apply)<br>
-                <input type="checkbox" name="intolerances" value="dairy">Dairy<br>
-                <input type="checkbox" name="intolerances" value="egg">Egg<br>
-                <input type="checkbox" name="intolerances" value="gluten">Gluten<br>
-                <input type="checkbox" name="intolerances" value="peanut">Peanut<br>
-                <input type="checkbox" name="intolerances" value="sesame">Sesame<br>
-                <input type="checkbox" name="intolerances" value="seafood">Seafood<br>
-                <input type="checkbox" name="intolerances" value="shellfish">Shellfish<br>
-                <input type="checkbox" name="intolerances" value="soy">Soy<br>
-                <input type="checkbox" name="intolerances" value="Sulfite">Sulfite<br>
-                <input type="checkbox" name="intolerances" value="treenut">Tree Nut<br>
-                <input type="checkbox" name="intolerances" value="wheat">Wheat<br><br>
-            Search keyword(s): <input type="text" name="query"><br>
-            <input type="submit" value="Find New Recipe(s)">
-        </form>
+        <p>You Currently Have No Pending Shopping Lists.</p>
     {% endif %}
 
-</p>
+<h2>Current Inventory:</h2>
+    {% if current_ingredients %}
+        <p>Select the Ingredients You Want to Use:</p>
+            <form action="/recipes">
+            {% for current_quantity, base_unit, ingredient_name in current_ingredients %}
+                {{ current_quantity }} {{ base_unit }} {{ ingredient_name }}<input type="checkbox" name="ingredient"><br>
+            {% endfor %}
+            <input type="submit" value="Find Recipe(s)">
+            </form>
+    {% else %}
+        <p>You Current Have No Inventory.</p>
+    {% endif %}
+
+<h2>Search For a New Recipe:</h2>
+    <form action="/recipes">
+        Diet Restrictions: 
+            <select name="diet">
+                <option value="none">None</option><br>
+                <option value="pescetarian">Pescatarian</option><br>
+                <option value="lactovegetarian">Lacto Vegetarian</option><br>
+                <option value="ovovegetarian">Ovo vegetarian</option><br>
+                <option value="vegan">Vegan</option><br>
+                <option value="vegetarian">Vegetarian</option>
+            </select><br><br>
+        Intolerance(s): (Select all that apply)<br>
+            <input type="checkbox" name="intolerances" value="dairy">Dairy<br>
+            <input type="checkbox" name="intolerances" value="egg">Egg<br>
+            <input type="checkbox" name="intolerances" value="gluten">Gluten<br>
+            <input type="checkbox" name="intolerances" value="peanut">Peanut<br>
+            <input type="checkbox" name="intolerances" value="sesame">Sesame<br>
+            <input type="checkbox" name="intolerances" value="seafood">Seafood<br>
+            <input type="checkbox" name="intolerances" value="shellfish">Shellfish<br>
+            <input type="checkbox" name="intolerances" value="soy">Soy<br>
+            <input type="checkbox" name="intolerances" value="Sulfite">Sulfite<br>
+            <input type="checkbox" name="intolerances" value="treenut">Tree Nut<br>
+            <input type="checkbox" name="intolerances" value="wheat">Wheat<br><br>
+        Search keyword(s): <input type="text" name="query"><br>
+        <input type="submit" value="Find New Recipe(s)">
+    </form>
 
 {% endblock %}
