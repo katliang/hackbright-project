@@ -106,8 +106,17 @@ def display_search_form():
 
         pending_shopping_lists = ShoppingList.query.filter(ShoppingList.has_shopped == False, ShoppingList.user_id == session['user_id']).all()
 
+        pending_recipes = UserRecipe.query.filter(UserRecipe.has_cooked == False, UserRecipe.user_id == session['user_id']).all()
+
+        pending_recipes_list = []
+
+        for user_recipe in pending_recipes:
+            recipe_info = recipe_info_by_id(user_recipe.recipe.recipe_id)
+            pending_recipes_list.append(recipe_info)
+
         return render_template("search.html", current_ingredients=current_ingredients_list,
                                               pending_shopping_lists=pending_shopping_lists,
+                                              pending_recipes_list=pending_recipes_list,
                                               )
     else:
         return render_template("homepage.html")
@@ -143,21 +152,13 @@ def show_user_recipes():
 
         new_user_recipe = UserRecipe(user_id=session['user_id'],
                                      recipe_id=recipe_id,
-                                     status='need_ingredients',
+                                     has_cooked=False,
                                      )
         db.session.add(new_user_recipe)
 
     db.session.commit()
 
-    all_user_recipes = db.session.query(UserRecipe.recipe_id).filter(UserRecipe.user_id == session['user_id']).filter(UserRecipe.status == 'need_ingredients').all()
-    
-    recipe_dict = {}
-    recipe_dict['id'] = []
-
-    for recipe in all_user_recipes:
-        recipe_dict['id'].append(recipe[0])
-
-    return jsonify(recipe_dict)
+    return jsonify({})
 
 
 @app.route("/shopping_list", methods=["POST"])
@@ -244,14 +245,14 @@ def add_inventory():
     for ingredient_id in inventory_dict:
         new_inventory = Inventory(user_id=session['user_id'],
                                   ingredient_id=int(ingredient_id),
-                                  current_quantity=int(inventory_dict[ingredient_id]['ingredientQty']),
+                                  current_quantity=float(inventory_dict[ingredient_id]['ingredientQty']),
                                   )
         db.session.add(new_inventory)
-    db.session.commit()
 
     # Change status of shopping list since list has been used by user
     shopping_list = ShoppingList.query.filter(ShoppingList.list_id == shopping_list_id).one()
     shopping_list.has_shopped = True
+
     db.session.commit()
 
     return jsonify({'success': True})

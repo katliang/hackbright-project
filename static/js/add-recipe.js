@@ -1,7 +1,7 @@
 "use strict";
 
 function showRecipeIds(result) {
-    console.log(result);
+    $('#confirm-add-recipe').html('Recipe has been saved. Search for more recipes or generate shopping list.');
 }
 
 // Creates a list of ids and sends in a dict to route
