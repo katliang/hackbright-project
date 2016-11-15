@@ -12,7 +12,7 @@ $('.checkbox').on('change', makeRequired);
 
 
 function sendToMain(results) {
-    window.location.href="/search";
+    window.location.href="/main";
 }
 
 function getInventoryInfo(evt) {

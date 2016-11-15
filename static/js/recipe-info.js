@@ -4,7 +4,7 @@ function displayConfirm(results) {
     if (results.result === false) {
         alert("Sorry, you don't have all the ingredients to make this recipe.");
     } else {
-        window.location.href="/search";
+        window.location.href="/main";
     }
 }
 

@@ -77,7 +77,7 @@ def login_process():
         if check_password:
             session['user_id'] = check_user.user_id
             flash("You are logged in")
-            return redirect("/search")
+            return redirect("/main")
         else:
             flash("Incorrect username and/or password. Please try again.")
             return redirect("/login")
@@ -86,11 +86,11 @@ def login_process():
         return redirect("/login")
 
 
-@app.route("/search")
-def display_search_form():
+@app.route("/main")
+def display_main_page():
     """ Display user's current ingredients."""
 
-    # if user is searching again for recipes, session is still active
+    # if user is logged in, session is still active
     if 'user_id' in session:
         current_ingredients = Inventory.query.filter(Inventory.user_id == session['user_id'], Inventory.current_quantity > 0).all()
 
@@ -112,10 +112,10 @@ def display_search_form():
             recipe_info = recipe_info_by_id(user_recipe.recipe.recipe_id)
             pending_recipes_list.append(recipe_info)
 
-        return render_template("search.html", current_ingredients=current_ingredients_list,
-                                              pending_shopping_lists=pending_shopping_lists,
-                                              pending_recipes_list=pending_recipes_list,
-                                              )
+        return render_template("main.html", current_ingredients=current_ingredients_list,
+                                            pending_shopping_lists=pending_shopping_lists,
+                                            pending_recipes_list=pending_recipes_list,
+                                            )
     else:
         return render_template("homepage.html")
 
