@@ -28,7 +28,7 @@
 
 <p>Ingredients:</p><br>
     {% for ingredient in recipe_details.extendedIngredients %}
-        {{ ingredient.amount }} {{ ingredient.unit }} {{ ingredient.name }}<br>
+        {{ '%0.2f' % ingredient.amount|float }} {{ ingredient.unit }} {{ ingredient.name }}<br>
     {% endfor %}<br>
 
 <p>Directions:</p><br>

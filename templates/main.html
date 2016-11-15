@@ -4,6 +4,8 @@
 
 {% block content %}
 
+<h1>Welcome</h1>
+
 <h2>Pending Shopping Lists to Confirm:</h2>
     {% if pending_shopping_lists %}
         {% for shopping_list in pending_shopping_lists %}
@@ -30,6 +32,16 @@
     {% else %}
         <p>You Currently Have No Inventory.</p>
     {% endif %}
+<p></p>
+
+<h2>Recipe Search:</h2>
+    {% if current_ingredients|length > 0 %}
+    <form action="/display_inventory">
+        <button type="submit" id="search-by-ingredient" value="submit">Search by Ingredient(s)</button>
+    </form>
+    {% endif %}
+
+    <button type="submit" id="search-new-recipes" value="submit">Search for New Recipe</button>
 
 <h2>Search For a New Recipe:</h2>
     <form action="/recipes">

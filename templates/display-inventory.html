@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Current Inventory{% endblock %}
+
+{% block content %}
+
+<h2>Search By Ingredient(s)</h2>
+<p>Select Ingredient(s) You Want To Use in Your Search</p>
+<form action="/search_by_ingredient">
+    {% for current_quantity, base_unit, ingredient_name in current_inventory %}
+        {{ current_quantity }} {{ base_unit }} {{ ingredient_name }}<input type="checkbox" name="ingredient" value="{{ ingredient_name }}"><br>
+    {% endfor %}
+    <input type="submit" value="Search">
+</form>
+<p><a href="/main">Return to Main Page</a></p>
+
+{% endblock %}

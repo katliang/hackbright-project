@@ -88,7 +88,7 @@ def login_process():
 
 @app.route("/main")
 def display_main_page():
-    """ Display user's current ingredients."""
+    """ Show user's main page."""
 
     # if user is logged in, session is still active
     if 'user_id' in session:
@@ -309,6 +309,23 @@ def add_inventory():
     db.session.commit()
 
     return jsonify({'success': True})
+
+
+@app.route("/display_inventory")
+def display_current_inventory():
+    """Displays user's current ingredients."""
+
+    current_inventory = Inventory.query.filter(Inventory.user_id == session['user_id'], Inventory.current_quantity > 0).all()
+
+    current_inventory_list = []
+
+    for ingredient in current_inventory:
+        current_quantity = ingredient.current_quantity
+        base_unit = ingredient.ingredients.base_unit
+        ingredient_name = ingredient.ingredients.ingredient_name
+        current_inventory_list.append((current_quantity, base_unit, ingredient_name))
+
+    return render_template("/display-inventory.html", current_inventory=current_inventory_list)
 
 
 @app.route("/logout")
