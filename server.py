@@ -92,7 +92,7 @@ def display_search_form():
 
     # if user is searching again for recipes, session is still active
     if 'user_id' in session:
-        current_ingredients = Inventory.query.filter(Inventory.user_id == session['user_id']).all()
+        current_ingredients = Inventory.query.filter(Inventory.user_id == session['user_id'], Inventory.current_quantity > 0).all()
 
         current_ingredients_list = []
 
@@ -104,7 +104,7 @@ def display_search_form():
 
         pending_shopping_lists = ShoppingList.query.filter(ShoppingList.has_shopped == False, ShoppingList.user_id == session['user_id']).all()
 
-        pending_recipes = UserRecipe.query.filter(UserRecipe.has_cooked == False, UserRecipe.user_id == session['user_id']).all()
+        pending_recipes = UserRecipe.query.filter(UserRecipe.status == 'in_progress', UserRecipe.user_id == session['user_id']).all()
 
         pending_recipes_list = []
 
@@ -150,7 +150,7 @@ def show_user_recipes():
 
         new_user_recipe = UserRecipe(user_id=session['user_id'],
                                      recipe_id=recipe_id,
-                                     has_cooked=False,
+                                     status='needs_ingredients',
                                      )
         db.session.add(new_user_recipe)
 
@@ -159,24 +159,66 @@ def show_user_recipes():
     return jsonify({})
 
 
-@app.route("/confirm_recipe/<recipe_id>")
-def confirm_recipe_cooked(recipe_id):
+@app.route("/recipe_detail/<recipe_id>")
+def show_recipe_details(recipe_id):
 
     recipe_details = recipe_info_by_id(recipe_id)
 
     return render_template("recipe_info.html", recipe_details=recipe_details)
 
 
+@app.route("/verify_recipe", methods=["POST"])
+def verify_recipe():
+
+    recipe_id = request.form.get("data")
+
+    recipe_details = recipe_info_by_id(int(recipe_id))
+
+    # First check if ALL ingredients are sufficient to make recipe
+    for ingredient in recipe_details['extendedIngredients']:
+        # Look up ingredient in inventory table
+        check_ingredient = Inventory.query.filter(Inventory.ingredient_id == int(ingredient['id']), Inventory.user_id == session['user_id']).one()
+
+        # If unit is not the same as the base unit in inventory table, convert the unit to base unit
+        if ingredient['unitLong'] != check_ingredient.ingredients.base_unit:
+            (converted_amount, converted_unit) = convert_to_base_unit(float(ingredient['amount']), ingredient['unitLong'])
+
+            # Check if current inventory has enough for the recipe
+            if check_ingredient.current_quantity < converted_amount:
+                return jsonify({'result': False})
+        else:
+            if check_ingredient.current_quantity < round(float(ingredient['amount']),2):
+                return jsonify({'result': False})
+
+    # If ALL ingredients are sufficient, subtract quantities
+    for ingredient in recipe_details['extendedIngredients']:
+        update_ingredient = Inventory.query.filter(Inventory.ingredient_id == int(ingredient['id']), Inventory.user_id == session['user_id']).one()
+
+        if ingredient['unitLong'] != update_ingredient.ingredients.base_unit:
+            (converted_amount, converted_unit) = convert_to_base_unit(float(ingredient['amount']), ingredient['unitLong'])
+            # Subtract recipe amount from inventory amount
+            update_ingredient.current_quantity -= converted_amount
+        else:
+            update_ingredient.current_quantity -= round(float(ingredient['amount']),2)
+
+    # Update user_recipe status to 'cooked'
+    cooked_recipe = UserRecipe.query.filter(UserRecipe.recipe_id == int(recipe_id), UserRecipe.user_id == session['user_id']).first()
+    cooked_recipe.status = 'cooked'
+
+    db.session.commit()
+
+    return jsonify({'result': True})
+
+
 @app.route("/shopping_list", methods=["POST"])
 def show_shopping_list():
     """Display shopping list of missing ingredients."""
 
-    all_user_recipes = db.session.query(UserRecipe.recipe_id).filter(UserRecipe.user_id == session['user_id']).all()
+    all_user_recipes = db.session.query(UserRecipe.recipe_id).filter(UserRecipe.user_id == session['user_id'], UserRecipe.status == 'needs_ingredients').all()
     new_shopping_list = ShoppingList(user_id=session['user_id'],
                                      has_shopped=False,
                                     )
     db.session.add(new_shopping_list)
-    db.session.commit()
 
     aggregated_ingredients = {}
 
@@ -206,6 +248,11 @@ def show_shopping_list():
                                              aggregate_quantity=aggregated_ingredients[ingredient_id]['quantity'],
                                              )
         db.session.add(new_list_ingredient)
+
+    # Update status of recipes added to shopping list to 'in progress'
+    update_recipes = UserRecipe.query.filter(UserRecipe.user_id == session['user_id'], UserRecipe.status == 'needs_ingredients').all()
+    for recipe in update_recipes:
+        recipe.status = 'in_progress'
 
     db.session.commit()
 
@@ -251,7 +298,7 @@ def add_inventory():
     for ingredient_id in inventory_dict:
         new_inventory = Inventory(user_id=session['user_id'],
                                   ingredient_id=int(ingredient_id),
-                                  current_quantity=float(inventory_dict[ingredient_id]['ingredientQty']),
+                                  current_quantity=round(float(inventory_dict[ingredient_id]['ingredientQty']),2),
                                   )
         db.session.add(new_inventory)
 

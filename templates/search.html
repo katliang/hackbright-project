@@ -16,21 +16,17 @@
 <h2>Selected Recipes to Cook:</h2>
     {% if pending_recipes_list %}
         {% for pending_recipe in pending_recipes_list %}
-            <a href="/confirm_recipe/{{ pending_recipe.id }}">{{ pending_recipe.title }}</a><br>
+            <a href="/recipe_detail/{{ pending_recipe.id }}">{{ pending_recipe.title }}</a><br>
         {% endfor %}
     {% else %}
         <p>You Currently Have No Selected Recipes.</p>
     {% endif %}
 
 <h2>Current Inventory:</h2>
-    {% if current_ingredients %}
-        <p>Select the Ingredients You Want to Use:</p>
-            <form action="/recipes">
-            {% for current_quantity, base_unit, ingredient_name in current_ingredients %}
-                {{ current_quantity }} {{ base_unit }} {{ ingredient_name }}<input type="checkbox" name="ingredient"><br>
-            {% endfor %}
-            <input type="submit" value="Find Recipe(s)">
-            </form>
+    {% if current_ingredients|length > 0 %}
+        {% for current_quantity, base_unit, ingredient_name in current_ingredients %}
+            {{ '%0.2f' % current_quantity|float }} {{ base_unit }} {{ ingredient_name }}<br>
+        {% endfor %}
     {% else %}
         <p>You Currently Have No Inventory.</p>
     {% endif %}

@@ -6,14 +6,25 @@
 
 <h2>{{ recipe_details.title }}</h2>
 
+{% if 'sourceName' in recipe_details %}
 <p>Recipe courtesy of <a href="{{ recipe_details.sourceUrl }}">{{ recipe_details.sourceName }}</a>
+{% endif %}
 
+{% if 'image' in recipe_details %}
 <p><img src="{{ recipe_details.image }}">
+{% endif %}
 
+{% if 'preparationMinutes' in recipe_details %}
 <p>Total preparation time: {{ recipe_details.preparationMinutes }} minutes</p>
-<p>Ready in {{ recipe_details.readyInMinutes }} minutes</p>
+{% endif %}
 
+{% if 'readyInMinutes' in recipe_details %}
+<p>Ready in {{ recipe_details.readyInMinutes }} minutes</p>
+{% endif %}
+
+{% if 'servings' in recipe_details %}
 <p>Servings: {{ recipe_details.servings }}</p>
+{% endif %}
 
 <p>Ingredients:</p><br>
     {% for ingredient in recipe_details.extendedIngredients %}
@@ -21,14 +32,16 @@
     {% endfor %}<br>
 
 <p>Directions:</p><br>
-{% if recipe_details.instructions %}
+{% if 'instructions' in recipe_details %}
     {{ recipe_details.instructions }}
 {% else %}
     <p>Please see <a href="{{ recipe_details.sourceUrl }}">{{ recipe_details.sourceName }}</a> for more details.</p>
 {% endif %}<br>
 
-<p><button type="button" id="cook-recipe">Cook me!</button></p>
+<p><button type="button" id="cook-recipe" data-recipe-id="{{ recipe_details.id }}">Cook me!</button></p>
 
 <p>Want to cook this later? <a href="/search">Return to Main Page</a></p>
+
+<script src="/static/js/recipe-info.js"></script>
 
 {% endblock %}

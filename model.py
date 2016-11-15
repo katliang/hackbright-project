@@ -43,7 +43,7 @@ class UserRecipe(db.Model):
     user_recipe_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.recipe_id'), nullable=False)
-    has_cooked = db.Column(db.Boolean, nullable=False)
+    status = db.Column(db.String(30), nullable=False)
 
     # Define relationship to users table
     user = db.relationship("User", backref=db.backref('user_recipes'))
@@ -54,10 +54,10 @@ class UserRecipe(db.Model):
     def __repr__(self):
         """ Provide helpful representation when printed."""
 
-        return '<UserRecipe user_id=%s recipe_id=%s has_cooked=%s>' % (self.user_id,
-                                                                       self.recipe_id,
-                                                                       self.has_cooked,
-                                                                       )
+        return '<UserRecipe user_id=%s recipe_id=%s status=%s>' % (self.user_id,
+                                                                   self.recipe_id,
+                                                                   self.status,
+                                                                   )
 
 
 class Recipe(db.Model):
@@ -229,7 +229,7 @@ def convert_to_base_unit(amount, input_unit):
     if input_unit.lower() in ['lb', 'pounds', 'pound']:
         new_amount = amount * 16.00
         return (new_amount, 'ounces')
-    elif input_unit.lower() in ['tbsp', 'tablespoons', 'tbs', 'tbsps']:
+    elif input_unit.lower() in ['tbsp', 'tablespoons', 'tbs', 'tbsps', 'tablespoon']:
         new_amount = amount * 3.00
         return (new_amount, 'teaspoons')
     else:
