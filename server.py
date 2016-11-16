@@ -2,7 +2,7 @@
 
 from flask import Flask, render_template, request, session, jsonify, flash, redirect
 from flask_debugtoolbar import DebugToolbarExtension
-from model import search_recipes, recipe_info_by_id, convert_to_base_unit
+from model import search_recipes, recipe_info_by_id, convert_to_base_unit, search_api_by_ingredient
 from model import User
 from model import UserRecipe
 from model import Recipe
@@ -326,6 +326,46 @@ def display_current_inventory():
         current_inventory_list.append((current_quantity, base_unit, ingredient_name))
 
     return render_template("/display-inventory.html", current_inventory=current_inventory_list)
+
+
+@app.route("/search_by_ingredient")
+def show_search_by_results():
+
+    # Retrieve list of selected ingredients by name and transform to search string
+    search_ingredients = request.args.getlist("ingredients[]")
+    ingredients = "%2C+".join(search_ingredients)
+
+    search_results = search_api_by_ingredient(ingredients)
+
+    # After getting search results, check if inventory quantity >= recipe quantity
+    # since API only searches by ingredient name and doesn't include quantities.
+    # Only display results that pass this criteria.
+
+    # Filtered list of recipes to display to user
+    show_recipes = []
+
+    for recipe in search_results['results']:
+        enough_ingredients = True
+
+        for ingredient in recipe['usedIngredients']:
+            check_ingredient = Inventory.query.filter(Inventory.ingredient_id == int(ingredient['id']), Inventory.user_id == session['user_id']).one()
+
+            # If the recipe ingredient's unit != inventory unit, convert it
+            if ingredient['unitLong'] != check_ingredient.ingredients.base_unit:
+                (converted_amount, converted_unit) = convert_to_base_unit(round(float(ingredient['amount']),2), ingredient['unitLong'])
+                # If recipe amount > inventory amount, don't add recipe to list
+                if converted_amount > check_ingredient.current_quantity:
+                    enough_ingredients = False
+            else:
+                # If recipe amount > inventory amount, don't add recipe to list
+                if round(float(ingredient['amount']),2) > check_ingredient.current_quantity:
+                    enough_ingredients = False
+
+        # If inventory quantities >= respective recipe quantities, add to list
+        if enough_ingredients == True:
+            show_recipes.append(recipe)
+
+    return render_template("recipes-by-ingredient.html", show_recipes=show_recipes)
 
 
 @app.route("/logout")

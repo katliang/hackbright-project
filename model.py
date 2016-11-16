@@ -180,10 +180,10 @@ def call_api(url):
     return response
 
 
-def search_by_ingredient(search_word):
-    """ Takes in a string and returns a list of recipes as dictionaries."""
+def search_api_by_ingredient(search_string):
+    """ Takes in a search string and returns a list of recipes as dictionaries."""
 
-    url = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/findByIngredients?fillIngredients=true&ingredients=" + str(search_word) + "&limitLicense=false&number=5&ranking=1"
+    url = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/searchComplex?addRecipeInformation=true&fillIngredients=true&includeIngredients=" + str(search_string) + "&intolerances=&limitLicense=false&number=5&ranking=1"
 
     response = call_api(url)
 
