@@ -8,6 +8,7 @@
 
     <p>When purchased, check item and enter amount purchased.</p>
 
+    <p><button type="button" id="select-all">Select All</button></p>
     <p>{% for (ingredient_id, ingredient_qty, ingredient_unit, ingredient_name) in ingredients %}</p>
         <form action="/inventory" method="POST" id="shopping_list" data-shopping-list-id="{{ shopping_list_id }}">
             {{ ingredient_qty }} {{ ingredient_unit }} {{ ingredient_name }}

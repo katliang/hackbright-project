@@ -7,21 +7,21 @@ function makeRequired(evt) {
     $(':checkbox:checked').next().next().prop('required', true);
     }
 
-
 $('.checkbox').on('change', makeRequired);
 
 
+// Redirect to main page.
 function sendToMain(results) {
     window.location.href="/main";
 }
 
+// When the form is submitted, iterate through the checked checkboxes.
+// For each checked checkbox, get the values from the next two fields.
 function getInventoryInfo(evt) {
     evt.preventDefault();
     var shoppingListId = $('#shopping_list').data('shopping-list-id')
     var inventory = {};
-    // if the checkbox is checked:
-    $(':checkbox:checked').each(function() {
-    // get the values from the next two fields
+    $('input:checkbox:checked').each(function() {
         var ingredientId = $(this).data('ingredient-id');
         var ingredientName = $(this).data('ingredient-name');
         var ingredientQty = $(this).next().val();
@@ -35,6 +35,14 @@ function getInventoryInfo(evt) {
     $.post("/inventory", {data: JSON.stringify(inventory), listId: shoppingListId}, sendToMain)
     }
 
-
-
 $('#shopping_list').on('submit', getInventoryInfo);
+
+
+// When the button is clicked, all the checkboxes are checked.
+function selectAllCheckboxes(evt) {
+    $('input:checkbox').each(function() {
+        $(this).prop('checked', true);
+    })
+}
+
+$('#select-all').on('click', selectAllCheckboxes);
