@@ -11,10 +11,10 @@
     <p><button type="button" id="select-all">Select All</button></p>
     <p>{% for (ingredient_id, ingredient_qty, ingredient_unit, ingredient_name) in ingredients %}</p>
         <form action="/inventory" method="POST" id="shopping_list" data-shopping-list-id="{{ shopping_list_id }}">
-            {{ ingredient_qty }} {{ ingredient_unit }} {{ ingredient_name }}
+            {{ '%0.2f' % ingredient_qty|float }} {{ ingredient_unit }} {{ ingredient_name }}
             <input type="checkbox" name="ingredient" class="checkbox" data-ingredient-id="{{ ingredient_id }}" data-ingredient-name="{{ ingredient_name }}">
 
-            <input type="number" step="0.01" name="quantity" class="quantity">
+            <input type="number" step="0.01" name="quantity" class="quantity" data-default-quantity="{{ '%0.2f' % ingredient_qty|float }}">
 
             <select name="unit" class="unit">
                     <option value="{{ ingredient_unit }}">{{ ingredient_unit }}</option><br>

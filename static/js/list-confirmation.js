@@ -5,6 +5,8 @@
 function makeRequired(evt) {
     $(':checkbox:checked').next().prop('required', true);
     $(':checkbox:checked').next().next().prop('required', true);
+    var defaultQty = $(this).next().data('default-quantity');
+    $(this).next().val(defaultQty);
     }
 
 $('.checkbox').on('change', makeRequired);
@@ -42,6 +44,8 @@ $('#shopping_list').on('submit', getInventoryInfo);
 function selectAllCheckboxes(evt) {
     $('input:checkbox').each(function() {
         $(this).prop('checked', true);
+        var defaultQty = $(this).next().data('default-quantity');
+        $(this).next().val(defaultQty);
     })
 }
 
