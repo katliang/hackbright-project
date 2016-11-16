@@ -24,7 +24,7 @@ app.jinja_env.undefined = StrictUndefined
 
 @app.route("/")
 def homepage():
-    """Display homepage."""
+    """ Display homepage."""
 
     return render_template("homepage.html")
 
@@ -122,7 +122,7 @@ def display_main_page():
 
 @app.route("/recipes")
 def show_matching_recipes():
-    """ Display recipes using the ingredient selected."""
+    """ Display recipes using the user's diet, intolerances and keywords."""
 
     diet = request.args.get("diet")
     intolerances = request.args.getlist("intolerances")
@@ -136,8 +136,8 @@ def show_matching_recipes():
 
 
 @app.route("/user-recipes.json", methods=["POST"])
-def show_user_recipes():
-    """Keeps track of selected recipes."""
+def update_user_recipes():
+    """ Keeps track of user's selected recipes."""
 
     recipe_ids = request.form.getlist("recipe_ids[]")
 
@@ -161,6 +161,7 @@ def show_user_recipes():
 
 @app.route("/recipe_detail/<recipe_id>")
 def show_recipe_details(recipe_id):
+    """ Displays recipe details."""
 
     recipe_details = recipe_info_by_id(recipe_id)
 
@@ -169,6 +170,7 @@ def show_recipe_details(recipe_id):
 
 @app.route("/verify_recipe", methods=["POST"])
 def verify_recipe():
+    """ Verify if inventory has enough of the recipe's ingredients to cook."""
 
     recipe_id = request.form.get("data")
 
@@ -212,7 +214,7 @@ def verify_recipe():
 
 @app.route("/shopping_list", methods=["POST"])
 def show_shopping_list():
-    """Display shopping list of missing ingredients."""
+    """ Creates shopping list of missing ingredients with aggregated quantities and base units."""
 
     all_user_recipes = db.session.query(UserRecipe.recipe_id).filter(UserRecipe.user_id == session['user_id'], UserRecipe.status == 'needs_ingredients').all()
     new_shopping_list = ShoppingList(user_id=session['user_id'],
@@ -271,6 +273,7 @@ def show_shopping_list():
 
 @app.route("/confirm_list/<shopping_list_id>")
 def confirm_purchases(shopping_list_id):
+    """ Displays the selected shopping list for user to confirm purchases."""
 
     list_ingredients = ListIngredient.query.filter(ListIngredient.shopping_list_id == shopping_list_id).all()
 
@@ -313,7 +316,7 @@ def add_inventory():
 
 @app.route("/display_inventory")
 def display_current_inventory():
-    """Displays user's current ingredients."""
+    """ Displays user's current inventory."""
 
     current_inventory = Inventory.query.filter(Inventory.user_id == session['user_id'], Inventory.current_quantity > 0).all()
 
@@ -330,6 +333,7 @@ def display_current_inventory():
 
 @app.route("/search_by_ingredient")
 def show_search_by_results():
+    """ Takes user's selected ingredients to search for recipes and displays results."""
 
     # Retrieve list of selected ingredients by name and transform to search string
     search_ingredients = request.args.getlist("ingredients[]")
