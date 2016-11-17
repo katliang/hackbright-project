@@ -12,7 +12,7 @@ function checkIngredients(evt) {
     $('#cook-recipe').attr('disabled', true);
     var recipeId = $('#cook-recipe').data('recipe-id');
 
-    $.post("/verify_recipe", {data: recipeId}, displayConfirm);
+    $.post("/verify_recipe.json", {data: recipeId}, displayConfirm);
 }
 
 $('#cook-recipe').on('click', checkIngredients);

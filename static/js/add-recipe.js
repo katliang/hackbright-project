@@ -2,6 +2,7 @@
 
 function showRecipeIds(result) {
     $('#confirm-add-recipe').html('Recipe has been saved. Search for more recipes or generate shopping list.');
+    $('#new-list').prop('disabled', false);
 }
 
 // Creates a list of ids and sends in a dict to route

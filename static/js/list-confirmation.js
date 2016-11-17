@@ -34,7 +34,7 @@ function getInventoryInfo(evt) {
         inventory[ingredientId]['ingredientUnit'] = ingredientUnit;
     })
 
-    $.post("/inventory", {data: JSON.stringify(inventory), listId: shoppingListId}, sendToMain)
+    $.post("/inventory.json", {data: JSON.stringify(inventory), listId: shoppingListId}, sendToMain)
     }
 
 $('#shopping_list').on('submit', getInventoryInfo);

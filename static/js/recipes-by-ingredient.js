@@ -15,7 +15,7 @@ function getIds(evt) {
         recipeIds.push($(this).data('recipe-id'));
     })
 
-    $.post("/add-recipe-id", {"recipe-ids": recipeIds}, showConfirmMsg);
+    $.post("/add-recipe-id.json", {"recipe-ids": recipeIds}, showConfirmMsg);
 
 }
 

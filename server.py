@@ -173,7 +173,7 @@ def show_recipe_details(recipe_id):
     return render_template("recipe_info.html", recipe_details=recipe_details)
 
 
-@app.route("/verify_recipe", methods=["POST"])
+@app.route("/verify_recipe.json", methods=["POST"])
 def verify_recipe():
     """ Verify if inventory has enough of the recipe's ingredients to cook."""
 
@@ -280,21 +280,14 @@ def show_shopping_list():
 def confirm_purchases(shopping_list_id):
     """ Displays the selected shopping list for user to confirm purchases."""
 
-    list_ingredients = ListIngredient.query.filter(ListIngredient.shopping_list_id == shopping_list_id).all()
+    shopping_list = ShoppingList.query.filter(ShoppingList.list_id == shopping_list_id).first()
 
-    all_ingredients = []
-
-    for ingredient in list_ingredients:
-        ingredient_id = ingredient.ingredient_id
-        ingredient_qty = ingredient.aggregate_quantity
-        ingredient_unit = ingredient.ingredient.base_unit
-        ingredient_name = ingredient.ingredient.ingredient_name
-        all_ingredients.append((ingredient_id, ingredient_qty, ingredient_unit, ingredient_name))
+    all_ingredients = shopping_list.get_ingredients()
 
     return render_template("list_confirmation.html", ingredients=all_ingredients, shopping_list_id=shopping_list_id)
 
 
-@app.route("/inventory", methods=["POST"])
+@app.route("/inventory.json", methods=["POST"])
 def add_inventory():
     """ Adds purchased ingredients to inventory."""
 
@@ -381,7 +374,7 @@ def show_search_by_results():
     return render_template("recipes-by-ingredient.html", show_recipes=show_recipes, search=ingredients)
 
 
-@app.route("/add-recipe-id", methods=['POST'])
+@app.route("/add-recipe-id.json", methods=['POST'])
 def add_recipe_id():
     """ Adds selected recipe in which there are missing ingredients for shopping list."""
 

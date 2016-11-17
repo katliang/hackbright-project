@@ -94,6 +94,22 @@ class ShoppingList(db.Model):
                                                                      self.has_shopped,
                                                                      )
 
+    def get_ingredients(self):
+        """ Returns ingredients from a shopping list."""
+
+        list_ingredients = ListIngredient.query.filter(ListIngredient.shopping_list_id == self.list_id).all()
+
+        all_ingredients = []
+
+        for ingredient in list_ingredients:
+            ingredient_id = ingredient.ingredient_id
+            ingredient_qty = ingredient.aggregate_quantity
+            ingredient_unit = ingredient.ingredient.base_unit
+            ingredient_name = ingredient.ingredient.ingredient_name
+            all_ingredients.append((ingredient_id, ingredient_qty, ingredient_unit, ingredient_name))
+
+        return all_ingredients
+
 
 class ListIngredient(db.Model):
     """Shopping list ingredient data."""
