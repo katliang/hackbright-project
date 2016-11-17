@@ -299,11 +299,15 @@ def add_inventory():
 
     # Add each ingredient to inventory list
     for ingredient_id in inventory_dict:
-        new_inventory = Inventory(user_id=session['user_id'],
-                                  ingredient_id=int(ingredient_id),
-                                  current_quantity=round(float(inventory_dict[ingredient_id]['ingredientQty']),2),
-                                  )
-        db.session.add(new_inventory)
+        check_inventory = Inventory.query.filter(Inventory.user_id == session['user_id'], Inventory.ingredient_id == ingredient_id).first()
+        if not check_inventory:
+            new_inventory = Inventory(user_id=session['user_id'],
+                                      ingredient_id=int(ingredient_id),
+                                      current_quantity=round(float(inventory_dict[ingredient_id]['ingredientQty']),2),
+                                      )
+            db.session.add(new_inventory)
+        else:
+            check_inventory.current_quantity += round(float(inventory_dict[ingredient_id]['ingredientQty']),2)
 
     # Change status of shopping list since list has been used by user
     shopping_list = ShoppingList.query.filter(ShoppingList.list_id == shopping_list_id).one()
@@ -336,7 +340,7 @@ def show_search_by_results():
     """ Takes user's selected ingredients to search for recipes and displays results."""
 
     # Retrieve list of selected ingredients by name and transform to search string
-    search_ingredients = request.args.getlist("ingredients[]")
+    search_ingredients = request.args.getlist("ingredient")
     ingredients = "%2C+".join(search_ingredients)
 
     search_results = search_api_by_ingredient(ingredients)
@@ -352,7 +356,7 @@ def show_search_by_results():
         enough_ingredients = True
 
         for ingredient in recipe['usedIngredients']:
-            check_ingredient = Inventory.query.filter(Inventory.ingredient_id == int(ingredient['id']), Inventory.user_id == session['user_id']).one()
+            check_ingredient = Inventory.query.filter(Inventory.ingredient_id == int(ingredient['id']), Inventory.user_id == session['user_id']).first()
 
             # If the recipe ingredient's unit != inventory unit, convert it
             if ingredient['unitLong'] != check_ingredient.ingredients.base_unit:
@@ -369,7 +373,94 @@ def show_search_by_results():
         if enough_ingredients == True:
             show_recipes.append(recipe)
 
-    return render_template("recipes-by-ingredient.html", show_recipes=show_recipes)
+    return render_template("recipes-by-ingredient.html", show_recipes=show_recipes, search=ingredients)
+
+
+@app.route("/add-recipe-id", methods=['POST'])
+def add_recipe_id():
+    """ Adds selected recipe in which there are missing ingredients for shopping list."""
+
+    # Get recipe ids for recipes selected by user
+    selected_recipes = request.form.getlist('recipe-ids[]')
+
+    for recipe_id in selected_recipes:
+        # Convert from unicode
+        recipe_id = int(recipe_id)
+
+        # Check if recipe id already exists
+        recipe = db.session.query(UserRecipe).filter(UserRecipe.user_id == session['user_id'], UserRecipe.recipe_id == recipe_id).first()
+
+        # If recipe does not already exist, add it
+        if not recipe:
+            new_recipe = Recipe(recipe_id=recipe_id,
+                                )
+            db.session.add(new_recipe)
+
+        # Add recipe with status 'needs_missing_ingredients'
+        new_user_recipe = UserRecipe(user_id=session['user_id'],
+                                     recipe_id=recipe_id,
+                                     status='needs_missing_ingredients',
+                                     )
+        db.session.add(new_user_recipe)
+
+    db.session.commit()
+
+    return jsonify({'result': True})
+
+
+@app.route("/partial_shopping_list", methods=['POST'])
+def add_missing_ingredients():
+    """ Displays shopping list with missing ingredients."""
+
+    new_recipes_to_add = db.session.query(UserRecipe.recipe_id).filter(UserRecipe.user_id == session['user_id'], UserRecipe.status == 'needs_missing_ingredients').all()
+    search_string = request.form.get("search")
+
+    new_shopping_list = ShoppingList(user_id=session['user_id'],
+                                     has_shopped=False,
+                                    )
+    db.session.add(new_shopping_list)
+
+    search_results = search_api_by_ingredient(search_string)
+
+    # Add missed ingredients for selected recipes
+    for result in search_results['results']:
+        if (result['id'],) in new_recipes_to_add:
+
+            for missing_ingredient in result['missedIngredients']:
+                (converted_amount, converted_unit) = convert_to_base_unit(round(float(missing_ingredient['amount']),2), str(missing_ingredient['unitLong']))
+                ingredient = Ingredient.query.filter(Ingredient.ingredient_id == missing_ingredient['id']).first()
+                if not ingredient:
+                    new_missing_ingredient = Ingredient(ingredient_id=missing_ingredient['id'],
+                                                        ingredient_name=missing_ingredient['name'],
+                                                        base_unit=converted_unit,
+                                                        )
+                    db.session.add(new_missing_ingredient)
+
+                new_list_ingredient = ListIngredient(shopping_list_id=new_shopping_list.list_id,
+                                                     ingredient_id=missing_ingredient['id'],
+                                                     aggregate_quantity=converted_amount,
+                                                    )
+
+                db.session.add(new_list_ingredient)
+
+    # Update status of recipes added to shopping list to 'in progress'
+    update_recipes = UserRecipe.query.filter(UserRecipe.user_id == session['user_id'], UserRecipe.status == 'needs_missing_ingredients').all()
+    for recipe in update_recipes:
+        recipe.status = 'in_progress'
+
+    db.session.commit()
+
+    user_ingredients = (db.session.query(ListIngredient.aggregate_quantity,
+                                         Ingredient.base_unit,
+                                         Ingredient.ingredient_name)
+                                  .join(Ingredient)
+                                  .join(ShoppingList)
+                                  .join(User)
+                                  .filter(ListIngredient.shopping_list_id == new_shopping_list.list_id)
+                                  .filter(User.user_id == session['user_id'])
+                                  .order_by(Ingredient.ingredient_name)).all()
+
+    return render_template("shopping.html", ingredients=user_ingredients)
 
 
 @app.route("/logout")

@@ -1,7 +1,7 @@
 "use strict";
 
 // Changes quantity and unit fields to required if checkbox is checked
-// Changes back to not required if checkbox is unchecked
+// Default values are populated
 function makeRequired(evt) {
     $(':checkbox:checked').next().prop('required', true);
     $(':checkbox:checked').next().next().prop('required', true);
@@ -41,6 +41,7 @@ $('#shopping_list').on('submit', getInventoryInfo);
 
 
 // When the button is clicked, all the checkboxes are checked.
+// Default values are populated
 function selectAllCheckboxes(evt) {
     $('input:checkbox').each(function() {
         $(this).prop('checked', true);
