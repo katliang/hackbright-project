@@ -92,15 +92,8 @@ def display_main_page():
 
     # if user is logged in, session is still active
     if 'user_id' in session:
-        current_ingredients = Inventory.query.filter(Inventory.user_id == session['user_id'], Inventory.current_quantity > 0).all()
-
-        current_ingredients_list = []
-
-        for ingredient in current_ingredients:
-            current_quantity = ingredient.current_quantity
-            base_unit = ingredient.ingredients.base_unit
-            ingredient_name = ingredient.ingredients.ingredient_name
-            current_ingredients_list.append((current_quantity, base_unit, ingredient_name))
+        current_user = User.query.get(session['user_id'])
+        current_ingredients_list = current_user.get_current_inventory()
 
         pending_shopping_lists = ShoppingList.query.filter(ShoppingList.has_shopped == False, ShoppingList.user_id == session['user_id']).all()
 
@@ -147,11 +140,12 @@ def update_user_recipes():
     recipe_ids = request.form.getlist("recipe_ids[]")
 
     for recipe_id in recipe_ids:
-        recipe = db.session.query(Recipe).first()
+        recipe = Recipe.query.get(int(recipe_id))
         if not recipe:
             new_recipe = Recipe(recipe_id=recipe_id,
                                 )
             db.session.add(new_recipe)
+            db.session.commit()
 
         new_user_recipe = UserRecipe(user_id=session['user_id'],
                                      recipe_id=recipe_id,
@@ -184,7 +178,7 @@ def verify_recipe():
     # First check if ALL ingredients are sufficient to make recipe
     for ingredient in recipe_details['extendedIngredients']:
         # Look up ingredient in inventory table
-        check_ingredient = Inventory.query.filter(Inventory.ingredient_id == int(ingredient['id']), Inventory.user_id == session['user_id']).one()
+        check_ingredient = Inventory.query.filter(Inventory.ingredient_id == int(ingredient['id']), Inventory.user_id == session['user_id']).first()
 
         # If unit is not the same as the base unit in inventory table, convert the unit to base unit
         if ingredient['unitLong'] != check_ingredient.ingredients.base_unit:
@@ -263,15 +257,7 @@ def show_shopping_list():
 
     db.session.commit()
 
-    user_ingredients = (db.session.query(ListIngredient.aggregate_quantity,
-                                         Ingredient.base_unit,
-                                         Ingredient.ingredient_name)
-                                  .join(Ingredient)
-                                  .join(ShoppingList)
-                                  .join(User)
-                                  .filter(ListIngredient.shopping_list_id == new_shopping_list.list_id)
-                                  .filter(User.user_id == session['user_id'])
-                                  .order_by(Ingredient.ingredient_name)).all()
+    user_ingredients = new_shopping_list.get_ingredients()
     
     return render_template("shopping.html", ingredients=user_ingredients)
 
@@ -442,15 +428,7 @@ def add_missing_ingredients():
 
     db.session.commit()
 
-    user_ingredients = (db.session.query(ListIngredient.aggregate_quantity,
-                                         Ingredient.base_unit,
-                                         Ingredient.ingredient_name)
-                                  .join(Ingredient)
-                                  .join(ShoppingList)
-                                  .join(User)
-                                  .filter(ListIngredient.shopping_list_id == new_shopping_list.list_id)
-                                  .filter(User.user_id == session['user_id'])
-                                  .order_by(Ingredient.ingredient_name)).all()
+    user_ingredients = new_shopping_list.get_ingredients()
 
     return render_template("shopping.html", ingredients=user_ingredients)
 
