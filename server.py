@@ -119,6 +119,11 @@ def display_main_page():
     else:
         return render_template("homepage.html")
 
+@app.route("/new_search")
+def show_new_search_form():
+
+    return render_template("new-search.html")
+
 
 @app.route("/recipes")
 def show_matching_recipes():
