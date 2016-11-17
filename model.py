@@ -20,12 +20,6 @@ class User(db.Model):
     username = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.String(200), nullable=False)
 
-    def set_password(self, password):
-        self.password = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password, password)
-
     def __repr__(self):
         """ Provide helpful representation when printed."""
 
@@ -33,6 +27,31 @@ class User(db.Model):
                                                               self.username,
                                                               self.password,
                                                              )
+
+    def set_password(self, password):
+        """ Sets user password to hashed password."""
+
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        """ Checks user's hashed password."""
+
+        return check_password_hash(self.password, password)
+
+    def get_current_inventory(self):
+        """ Returns user's current inventory list."""
+
+        current_inventory = Inventory.query.filter(Inventory.user_id == self.user_id, Inventory.current_quantity > 0).all()
+
+        current_inventory_list = []
+
+        for ingredient in current_inventory:
+            current_quantity = ingredient.current_quantity
+            base_unit = ingredient.ingredients.base_unit
+            ingredient_name = ingredient.ingredients.ingredient_name
+            current_inventory_list.append((current_quantity, base_unit, ingredient_name))
+
+        return current_inventory_list
 
 
 class UserRecipe(db.Model):

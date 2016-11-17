@@ -140,14 +140,14 @@ def show_matching_recipes():
     return render_template("recipes.html", recipe_info=recipe_info)
 
 
-@app.route("/user-recipes.json", methods=["POST"])
+@app.route("/user-recipes", methods=["POST"])
 def update_user_recipes():
     """ Keeps track of user's selected recipes."""
 
     recipe_ids = request.form.getlist("recipe_ids[]")
 
     for recipe_id in recipe_ids:
-        recipe = db.session.query(UserRecipe).filter(UserRecipe.user_id == session['user_id'], UserRecipe.recipe_id == recipe_id).first()
+        recipe = db.session.query(Recipe).first()
         if not recipe:
             new_recipe = Recipe(recipe_id=recipe_id,
                                 )
@@ -320,15 +320,9 @@ def add_inventory():
 def display_current_inventory():
     """ Displays user's current inventory."""
 
-    current_inventory = Inventory.query.filter(Inventory.user_id == session['user_id'], Inventory.current_quantity > 0).all()
+    current_user = User.query.get(session['user_id'])
 
-    current_inventory_list = []
-
-    for ingredient in current_inventory:
-        current_quantity = ingredient.current_quantity
-        base_unit = ingredient.ingredients.base_unit
-        ingredient_name = ingredient.ingredients.ingredient_name
-        current_inventory_list.append((current_quantity, base_unit, ingredient_name))
+    current_inventory_list = current_user.get_current_inventory()
 
     return render_template("/display-inventory.html", current_inventory=current_inventory_list)
 

@@ -14,7 +14,7 @@ function addRecipe(evt) {
         recipeIds.push($(this).val());
     });
 
-    $.post('/user-recipes.json', {'recipe_ids': recipeIds}, showRecipeIds);
+    $.post('/user-recipes', {'recipe_ids': recipeIds}, showRecipeIds);
 
 }
 
