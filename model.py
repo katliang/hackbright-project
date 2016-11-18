@@ -204,11 +204,14 @@ def connect_to_db(app, db_uri='postgresql:///food'):
 def example_data():
     """Create some sample data."""
 
-    bob = User(username="bob", password="123")
-    sally = User(username="sally", password="123")
-    tom = User(username="tom", password="123")
+    User.query.delete()
 
-    db.session.add_all([bob, sally, tom])
+    sally = User(username="sally", password="")
+    sally.set_password("123")
+    tom = User(username="tom", password="")
+    tom.set_password("123")
+
+    db.session.add_all([sally, tom])
     db.session.commit()
 
 
