@@ -23,10 +23,9 @@ class User(db.Model):
     def __repr__(self):
         """ Provide helpful representation when printed."""
 
-        return '<User user_id=%s username=%s password=%s>' % (self.user_id,
-                                                              self.username,
-                                                              self.password,
-                                                             )
+        return '<User user_id=%s username=%s>' % (self.user_id,
+                                                  self.username,
+                                                  )
 
     def set_password(self, password):
         """ Sets user password to hashed password."""

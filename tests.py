@@ -1,6 +1,6 @@
 from unittest import TestCase
 from server import app
-from model import connect_to_db, db, example_data
+from model import connect_to_db, db, example_data, User
 import os
 
 
@@ -142,6 +142,11 @@ class FlaskTestsLoggedIn(TestCase):
         self.assertIn('<select name="diet">', result.data)
         self.assertIn('value="Find New Recipe(s)', result.data)
 
+    def test_user_repr(self):
+        """ Test representation of user."""
+
+        sally = User.query.filter(User.username == "sally").one()
+        assert User.__repr__(sally) == '<User user_id=1 username=sally>'
 
 if __name__ == "__main__":
     import unittest
