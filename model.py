@@ -191,14 +191,25 @@ class Inventory(db.Model):
 """ Helper functions for applications. """
 
 
-def connect_to_db(app):
+def connect_to_db(app, db_uri='postgresql:///food'):
     """ Connect the database to our Flask app."""
 
     # Configure to use our database
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///food'
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.app = app
     db.init_app(app)
+
+
+def example_data():
+    """Create some sample data."""
+
+    bob = User(username="bob", password="123")
+    sally = User(username="sally", password="123")
+    tom = User(username="tom", password="123")
+
+    db.session.add_all([bob, sally, tom])
+    db.session.commit()
 
 
 def call_api(url):
