@@ -3,3 +3,5 @@ secrets.sh
 *.pyc
 .DS_Store
 templates/.DS_Store
+.coverage
+htmlcov/
