@@ -94,16 +94,8 @@ def display_main_page():
     if 'user_id' in session:
         current_user = User.query.get(session['user_id'])
         current_ingredients_list = current_user.get_current_inventory()
-
-        pending_shopping_lists = ShoppingList.query.filter(ShoppingList.has_shopped == False, ShoppingList.user_id == session['user_id']).all()
-
-        pending_recipes = UserRecipe.query.filter(UserRecipe.status == 'in_progress', UserRecipe.user_id == session['user_id']).all()
-
-        pending_recipes_list = []
-
-        for user_recipe in pending_recipes:
-            recipe_info = recipe_info_by_id(user_recipe.recipe.recipe_id)
-            pending_recipes_list.append(recipe_info)
+        pending_shopping_lists = current_user.get_pending_shopping_lists()
+        pending_recipes_list = current_user.get_pending_recipes()
 
         return render_template("main.html", current_ingredients=current_ingredients_list,
                                             pending_shopping_lists=pending_shopping_lists,

@@ -52,6 +52,24 @@ class User(db.Model):
 
         return current_inventory_list
 
+    def get_pending_recipes(self):
+        """ Returns user's pending recipes list."""
+
+        pending_recipes = UserRecipe.query.filter(UserRecipe.status == 'in_progress', UserRecipe.user_id == self.user_id).all()
+
+        pending_recipes_list = []
+
+        for user_recipe in pending_recipes:
+            recipe_info = recipe_info_by_id(user_recipe.recipe.recipe_id)
+            pending_recipes_list.append(recipe_info)
+
+        return pending_recipes_list
+
+    def get_pending_shopping_lists(self):
+        """ Returns user's pending shopping lists."""
+
+        return ShoppingList.query.filter(ShoppingList.has_shopped == False, ShoppingList.user_id == self.user_id).all()
+
 
 class UserRecipe(db.Model):
     """ User recipe data."""
