@@ -58,7 +58,7 @@ class UserRecipe(db.Model):
 
     __tablename__ = 'user_recipes'
 
-    user_recipe_id = db.Column(db.Integer, primary_key=True)
+    user_recipe_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.recipe_id'), nullable=False)
     status = db.Column(db.String(30), nullable=False)
@@ -107,10 +107,10 @@ class ShoppingList(db.Model):
     def __repr__(self):
         """ Provide helpful representation when printed."""
 
-        return '<ShoppingList list_id=%s user_id=%s has_shopped>' % (self.list_id,
-                                                                     self.user_id,
-                                                                     self.has_shopped,
-                                                                     )
+        return '<ShoppingList list_id=%s user_id=%s has_shopped=%s>' % (self.list_id,
+                                                                        self.user_id,
+                                                                        self.has_shopped,
+                                                                        )
 
     def get_ingredients(self):
         """ Returns ingredients from a shopping list."""
@@ -203,14 +203,38 @@ def connect_to_db(app, db_uri='postgresql:///food'):
 def example_data():
     """Create some sample data."""
 
-    User.query.delete()
-
+    # Adds sample users.
     sally = User(username="sally", password="")
     sally.set_password("123")
     tom = User(username="tom", password="")
     tom.set_password("123")
 
-    db.session.add_all([sally, tom])
+    # Adds sample recipes.
+    rec1 = Recipe(recipe_id=1)
+    rec2 = Recipe(recipe_id=2)
+
+    # Adds sample ingredients.
+    ing1 = Ingredient(ingredient_id=1, ingredient_name='apple', base_unit='ounces')
+    ing2 = Ingredient(ingredient_id=2, ingredient_name='banana', base_unit='ounces')
+    ing3 = Ingredient(ingredient_id=3, ingredient_name='carrot', base_unit='ounces')
+
+    # Adds sample shopping lists.
+    shop1 = ShoppingList(user_id=1, has_shopped=False)
+    shop2 = ShoppingList(user_id=2, has_shopped=False)
+
+    db.session.add_all([sally, tom, rec1, rec2, ing1, ing2, ing3, shop1, shop2])
+    db.session.commit()
+
+    # Adds sample inventory.
+    inv1 = Inventory(user_id=1, ingredient_id=1, current_quantity=5)
+    inv2 = Inventory(user_id=1, ingredient_id=2, current_quantity=0)
+    inv3 = Inventory(user_id=2, ingredient_id=3, current_quantity=5)
+
+    # Adds sample user recipes.
+    u_rec1 = UserRecipe(user_id=1, recipe_id=1, status='needs_ingredients')
+    u_rec2 = UserRecipe(user_id=2, recipe_id=2, status='in_process')
+
+    db.session.add_all([inv1, inv2, inv3, u_rec1, u_rec2])
     db.session.commit()
 
 

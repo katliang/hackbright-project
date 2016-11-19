@@ -1,6 +1,6 @@
 from unittest import TestCase
 from server import app
-from model import connect_to_db, db, example_data, User
+from model import connect_to_db, db, example_data, User, UserRecipe, Recipe, ShoppingList
 import os
 
 
@@ -108,7 +108,7 @@ class FlaskTestsLoggedIn(TestCase):
     def tearDown(self):
         """ Things to do after every test."""
 
-        db.session.close()
+        db.session.remove()
         db.drop_all()
 
     def test_successful_login(self):
@@ -143,10 +143,34 @@ class FlaskTestsLoggedIn(TestCase):
         self.assertIn('value="Find New Recipe(s)', result.data)
 
     def test_user_repr(self):
-        """ Test representation of user."""
+        """ Test representation of a user."""
 
         sally = User.query.filter(User.username == "sally").one()
-        assert User.__repr__(sally) == '<User user_id=1 username=sally>'
+        assert sally.__repr__() == '<User user_id=1 username=sally>'
+
+    def test_get_current_inventory(self):
+        """ Test user's current inventory."""
+
+        current_user = User.query.get(1)
+        self.assertEqual(current_user.get_current_inventory(), [(5.0, 'ounces', 'apple')])
+
+    def test_user_recipe_repr(self):
+        """ Test representation of a user recipe."""
+
+        user_recipe = UserRecipe.query.filter(UserRecipe.user_id == 1).first()
+        assert user_recipe.__repr__() == '<UserRecipe user_id=1 recipe_id=1 status=needs_ingredients>'
+
+    def test_recipe_repr(self):
+        """ Test representation of a recipe."""
+
+        recipe = Recipe.query.get(1)
+        assert recipe.__repr__() == '<Recipe recipe_id=1>'
+
+    def test_shopping_list_repr(self):
+        """ Test representation of a shopping list."""
+
+        shopping_list = ShoppingList.query.filter(ShoppingList.user_id == 1).first()
+        assert shopping_list.__repr__() == '<ShoppingList list_id=1 user_id=1 has_shopped=False>'
 
 if __name__ == "__main__":
     import unittest
