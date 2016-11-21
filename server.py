@@ -144,8 +144,7 @@ def update_user_recipes():
                                      status='needs_ingredients',
                                      )
         db.session.add(new_user_recipe)
-
-    db.session.commit()
+        db.session.commit()
 
     return jsonify({})
 
@@ -172,6 +171,8 @@ def verify_recipe():
         # Look up ingredient in inventory table
         check_ingredient = Inventory.query.filter(Inventory.ingredient_id == int(ingredient['id']), Inventory.user_id == session['user_id']).first()
 
+        if not check_ingredient:
+            return jsonify({'result': False})
         # If unit is not the same as the base unit in inventory table, convert the unit to base unit
         if ingredient['unitLong'] != check_ingredient.ingredients.base_unit:
             (converted_amount, converted_unit) = convert_to_base_unit(float(ingredient['amount']), ingredient['unitLong'])
