@@ -50,7 +50,7 @@ class User(db.Model):
             ingredient_name = ingredient.ingredients.ingredient_name
             current_inventory_list.append((current_quantity, base_unit, ingredient_name))
 
-        return current_inventory_list
+        return sorted(current_inventory_list, key=lambda x: x[2])
 
     def get_pending_recipes(self):
         """ Returns user's pending recipes list."""
@@ -173,7 +173,7 @@ class ShoppingList(db.Model):
             ingredient_name = ingredient.ingredient.ingredient_name
             all_ingredients.append((ingredient_id, ingredient_qty, ingredient_unit, ingredient_name))
 
-        return all_ingredients
+        return sorted(all_ingredients, key=lambda x: x[3])
 
 
 class ListIngredient(db.Model):
