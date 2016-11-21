@@ -70,6 +70,35 @@ class User(db.Model):
 
         return ShoppingList.query.filter(ShoppingList.has_shopped == False, ShoppingList.user_id == self.user_id).all()
 
+    def get_used_and_missing_ingredients(self, recipe_id_list):
+        """ Takes in a list of recipe ids and returns its ingredients with an id, current
+        inventory ingredients, missing ingredients and general recipe info."""
+
+        results_recipes = {}
+
+        for recipe_id in recipe_id_list:
+
+            recipe_info = recipe_info_by_id(recipe_id)
+
+            results_recipes[recipe_id] = {}
+            results_recipes[recipe_id]['inventory_ing'] = []
+            results_recipes[recipe_id]['missing_ing'] = []
+            results_recipes[recipe_id]['info'] = recipe_info
+
+            for ingredient in recipe_info['extendedIngredients']:
+                (converted_amount, base_unit) = convert_to_base_unit(ingredient['amount'], ingredient['unitLong'])
+
+                check_inventory = Inventory.query.filter(Inventory.ingredient_id == int(ingredient['id']), Inventory.user_id == self.user_id).first()
+
+                if check_inventory:
+                    if check_inventory.current_quantity <= 0:
+                        results_recipes[recipe_id]['missing_ing'].append((int(ingredient['id']), converted_amount, base_unit, ingredient['name']))
+                    else:
+                        results_recipes[recipe_id]['inventory_ing'].append((int(ingredient['id']), converted_amount, base_unit, ingredient['name']))
+                else:
+                    results_recipes[recipe_id]['missing_ing'].append((int(ingredient['id']), converted_amount, base_unit, ingredient['name']))
+
+        return results_recipes
 
 class UserRecipe(db.Model):
     """ User recipe data."""

@@ -320,7 +320,7 @@ def show_search_by_results():
     # Only display results that pass this criteria.
 
     # Filtered list of recipes to display to user
-    show_recipes = []
+    filter_recipes = []
 
     for recipe in search_results['results']:
         enough_ingredients = True
@@ -341,9 +341,13 @@ def show_search_by_results():
 
         # If inventory quantities >= respective recipe quantities, add to list
         if enough_ingredients == True:
-            show_recipes.append(recipe)
+            filter_recipes.append(recipe['id'])
 
-    return render_template("recipes-by-ingredient.html", show_recipes=show_recipes, search=ingredients)
+    current_user = User.query.get(session['user_id'])
+
+    results_recipes = current_user.get_used_and_missing_ingredients(filter_recipes)
+
+    return render_template("recipes-by-ingredient.html", results_recipes=results_recipes)
 
 
 @app.route("/add-recipe-id.json", methods=['POST'])
@@ -358,13 +362,14 @@ def add_recipe_id():
         recipe_id = int(recipe_id)
 
         # Check if recipe id already exists
-        recipe = db.session.query(UserRecipe).filter(UserRecipe.user_id == session['user_id'], UserRecipe.recipe_id == recipe_id).first()
+        recipe = Recipe.query.get(recipe_id)
 
         # If recipe does not already exist, add it
         if not recipe:
             new_recipe = Recipe(recipe_id=recipe_id,
                                 )
             db.session.add(new_recipe)
+            db.session.commit()
 
         # Add recipe with status 'needs_missing_ingredients'
         new_user_recipe = UserRecipe(user_id=session['user_id'],
@@ -383,35 +388,36 @@ def add_missing_ingredients():
     """ Displays shopping list with missing ingredients."""
 
     new_recipes_to_add = db.session.query(UserRecipe.recipe_id).filter(UserRecipe.user_id == session['user_id'], UserRecipe.status == 'needs_missing_ingredients').all()
-    search_string = request.form.get("search")
+
+    new_recipe_list = []
+    for recipe in new_recipes_to_add:
+        new_recipe_list.append(recipe[0])
 
     new_shopping_list = ShoppingList(user_id=session['user_id'],
                                      has_shopped=False,
                                     )
     db.session.add(new_shopping_list)
 
-    search_results = search_api_by_ingredient(search_string)
+    current_user = User.query.get(session['user_id'])
 
-    # Add missed ingredients for selected recipes
-    for result in search_results['results']:
-        if (result['id'],) in new_recipes_to_add:
+    results_recipes = current_user.get_used_and_missing_ingredients(new_recipe_list)
 
-            for missing_ingredient in result['missedIngredients']:
-                (converted_amount, converted_unit) = convert_to_base_unit(round(float(missing_ingredient['amount']),2), str(missing_ingredient['unitLong']))
-                ingredient = Ingredient.query.filter(Ingredient.ingredient_id == missing_ingredient['id']).first()
-                if not ingredient:
-                    new_missing_ingredient = Ingredient(ingredient_id=missing_ingredient['id'],
-                                                        ingredient_name=missing_ingredient['name'],
-                                                        base_unit=converted_unit,
-                                                        )
-                    db.session.add(new_missing_ingredient)
-
-                new_list_ingredient = ListIngredient(shopping_list_id=new_shopping_list.list_id,
-                                                     ingredient_id=missing_ingredient['id'],
-                                                     aggregate_quantity=converted_amount,
+    for recipe in results_recipes:
+        for missing_ingredient in results_recipes[recipe]['missing_ing']:
+            ingredient = Ingredient.query.filter(Ingredient.ingredient_id == missing_ingredient[0]).first()
+            if not ingredient:
+                new_missing_ingredient = Ingredient(ingredient_id=missing_ingredient[0],
+                                                    ingredient_name=missing_ingredient[3],
+                                                    base_unit=missing_ingredient[2],
                                                     )
+                db.session.add(new_missing_ingredient)
 
-                db.session.add(new_list_ingredient)
+            new_list_ingredient = ListIngredient(shopping_list_id=new_shopping_list.list_id,
+                                                 ingredient_id=missing_ingredient[0],
+                                                 aggregate_quantity=missing_ingredient[1],
+                                                 )
+
+            db.session.add(new_list_ingredient)
 
     # Update status of recipes added to shopping list to 'in progress'
     update_recipes = UserRecipe.query.filter(UserRecipe.user_id == session['user_id'], UserRecipe.status == 'needs_missing_ingredients').all()

@@ -10,22 +10,22 @@
 
 <p><form action="/add-recipe-id" method="POST" id="add-recipe">
 
-    {% for recipe in show_recipes %}
-        <b>Recipe Name: {{ recipe['title'] }}</b><input type="checkbox" name="recipeid" data-recipe-id="{{ recipe['id'] }}"><br>
-        Ready in {{ recipe['readyInMinutes'] }} minutes<br>
-        <img src="{{ recipe['image'] }}"><br>
-        {% if 'sourceName' in recipe %}
-            via <a href="{{ recipe['sourceUrl'] }}">{{ recipe['sourceName'] }}</a><br><br>
+    {% for recipe in results_recipes %}
+        <b>Recipe Name: {{ results_recipes[recipe]['info']['title'] }}</b><input type="checkbox" name="recipeid" data-recipe-id="{{ recipe }}"><br>
+        Ready in {{ results_recipes[recipe]['info']['readyInMinutes'] }} minutes<br>
+        <img src="{{ results_recipes[recipe]['info']['image'] }}"><br>
+        {% if 'sourceName' in results_recipes[recipe]['info'] %}
+            via <a href="{{ results_recipes[recipe]['info']['sourceUrl'] }}">{{ results_recipes[recipe]['info']['sourceName'] }}</a><br><br>
         {% endif %}
 
         Ingredients in Inventory:<br>
-        {% for ingredient in recipe['usedIngredients'] %}
-            {{ ingredient['amount'] }} {{ ingredient['unit'] }} {{ ingredient['name'] }}<br>
+        {% for ing_id, inventory_amount, base_unit, ingredient_name in results_recipes[recipe]['inventory_ing'] %}
+            {{ inventory_amount }} {{ base_unit }} {{ ingredient_name }}<br>
         {% endfor %}<br>
 
         Missing Ingredients to Add to Shopping List:<br>
-        {% for ingredient in recipe['missedIngredients'] %}
-            {{ ingredient['amount'] }} {{ ingredient['unit'] }} {{ ingredient['name'] }}<br>
+        {% for ing_id, missing_amount, base_unit, ingredient_name in results_recipes[recipe]['missing_ing'] %}
+            {{ missing_amount }} {{ base_unit }} {{ ingredient_name }}<br>
         {% endfor %}<br>
     {% endfor %}
     <input type="submit" value="Add Selected Recipe(s)" id="add-submit-button">
@@ -34,7 +34,6 @@
     <div id="confirm-add"></div>
     
     <form action="/partial_shopping_list" method="POST">
-        <input type="hidden" name="search" value="{{ search }}">
         <input type="submit" value="Generate Shopping List" id="create-list" disabled><br>
     </form>
 </p>
