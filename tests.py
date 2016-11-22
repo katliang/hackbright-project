@@ -172,6 +172,12 @@ class FlaskTestsLoggedIn(TestCase):
         shopping_list = ShoppingList.query.filter(ShoppingList.user_id == 1).first()
         assert shopping_list.__repr__() == '<ShoppingList list_id=1 user_id=1 has_shopped=False>'
 
+    def test_log_out(self):
+        """ Test user log out."""
+
+        result = self.client.get("/logout")
+        self.assertIn("You Have Logged Out", result.data)
+
 if __name__ == "__main__":
     import unittest
 
