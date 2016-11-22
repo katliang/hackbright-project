@@ -196,7 +196,7 @@ def verify_recipe():
             update_ingredient.current_quantity -= round(float(ingredient['amount']),2)
 
     # Update user_recipe status to 'cooked'
-    cooked_recipe = UserRecipe.query.filter(UserRecipe.recipe_id == int(recipe_id), UserRecipe.user_id == session['user_id']).first()
+    cooked_recipe = UserRecipe.query.filter(UserRecipe.recipe_id == int(recipe_id), UserRecipe.user_id == session['user_id'], UserRecipe.status == 'in_progress').first()
     cooked_recipe.status = 'cooked'
 
     db.session.commit()
@@ -424,8 +424,7 @@ def add_missing_ingredients():
     update_recipes = UserRecipe.query.filter(UserRecipe.user_id == session['user_id'], UserRecipe.status == 'needs_missing_ingredients').all()
     for recipe in update_recipes:
         recipe.status = 'in_progress'
-
-    db.session.commit()
+        db.session.commit()
 
     user_ingredients = new_shopping_list.get_ingredients()
 
