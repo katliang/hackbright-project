@@ -3,48 +3,69 @@
 {% block title %}Main Page{% endblock %}
 
 {% block content %}
+<div class="ui container">
+    <h1>Welcome</h1>
+<div class="ui stackable grid">
+  <div class="eight wide column">
 
-<h1>Welcome</h1>
-
-<h2>Pending Shopping Lists to Confirm:</h2>
-    {% if pending_shopping_lists %}
-        {% for shopping_list in pending_shopping_lists %}
-            <a href="/confirm_list/{{ shopping_list.list_id}}"> List #{{ shopping_list.list_id}}</a><br>
-        {% endfor %}
-    {% else %}
-        <p>You Currently Have No Pending Shopping Lists.</p>
-    {% endif %}
-
-<h2>Selected Recipes to Cook:</h2>
-    {% if pending_recipes_list %}
-        {% for pending_recipe in pending_recipes_list %}
-            <a href="/recipe_detail/{{ pending_recipe.id }}">{{ pending_recipe.title }}</a><br>
-        {% endfor %}
-    {% else %}
-        <p>You Currently Have No Selected Recipes.</p>
-    {% endif %}
-
-<h2>Current Inventory:</h2>
-    {% if current_ingredients|length > 0 %}
-        {% for current_quantity, base_unit, ingredient_name in current_ingredients %}
+    <div class="ui fluid card">
+        <div class="content">
+            <div class="header">Current Inventory</div>
+            <div class="description">
+            {% if current_ingredients|length > 0 %}
+                {% for current_quantity, base_unit, ingredient_name in current_ingredients %}
             {{ '%0.2f' % current_quantity|float }} {{ base_unit }} {{ ingredient_name }}<br>
-        {% endfor %}
-    {% else %}
-        <p>You Currently Have No Inventory.</p>
-    {% endif %}
-<p></p>
+            {% endfor %}
+            {% else %}
+                <p>You Currently Have No Inventory.</p>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 
-<h2>Recipe Search:</h2>
-    {% if current_ingredients|length > 0 %}
-    <form action="/display_inventory">
-        <button type="submit" id="search-by-ingredient" value="submit">Search by Ingredient(s)</button>
-    </form>
-    {% endif %}
+  <div class="eight wide column">
+      <div class="ui fluid card">
+        <div class="content">
+            <div class="header">Pending Shopping Lists to Confirm</div>
+            <div class="description">
+            {% if pending_shopping_lists %}
+                {% for shopping_list in pending_shopping_lists %}
+                <a href="/confirm_list/{{ shopping_list.list_id}}"> List #{{ shopping_list.list_id}}</a><br>
+            {% endfor %}
+            {% else %}
+                <p>You Currently Have No Pending Shopping Lists.</p>
+            {% endif %}
+            </div>
+        </div>
+    </div>
 
-    <form action="/new_search">
-        <button type="submit" id="search-new-recipes" value="submit">Search for New Recipe</button>
-    </form>
+    <div class="ui fluid card">
+        <div class="content">
+            <div class="header">Selected Recipes to Cook</div>
+            <div class="description">
+            {% if pending_recipes_list %}
+                {% for pending_recipe in pending_recipes_list %}
+                <a href="/recipe_detail/{{ pending_recipe.id }}">{{ pending_recipe.title }}</a><br>
+            {% endfor %}
+            {% else %}
+                <p>You Currently Have No Selected Recipes.</p>
+            {% endif %}
+            </div>
+        </div>
+    </div>
 
-<p><a href="/logout">Log Out</a></p>
+  </div>
+  <div class="sixteen wide column">
+      <div class="ui floating message">
+  <p>Recipe Search:</p>
+      {% if current_ingredients|length > 0 %}
+            <a href="/display_inventory" class="ui grey button">Search by Ingredient(s)</a>
+        {% endif %}
+        <a href="/new_search" class="ui green button">Search for New Recipe</a>
+</div>
+  </div>
+  </div>
+</div>
 
 {% endblock %}
