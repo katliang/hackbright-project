@@ -1,20 +1,8 @@
 """ Seeds database."""
 
-from model import User
-from model import UserRecipe
-from model import Recipe
-from model import ShoppingList
-from model import ListIngredient
-from model import Ingredient
-from model import Inventory
+from model import User, UserRecipe, Recipe, ShoppingList, ListIngredient, Ingredient, Inventory
 from model import connect_to_db, db
 from server import app
-
-
-
-
-
-
 
 
 if __name__ == "__main__":
