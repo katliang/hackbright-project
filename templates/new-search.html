@@ -3,91 +3,110 @@
 {% block title %}New Search{% endblock %}
 
 {% block content %}
-
-<h2>Recipe Search</h2>
-
-<h2>Search For a New Recipe:</h2>
-    <form action="/recipes">
-
-        <!-- Diet restrictions -->
-        <div class="ui form">
-            <div class="field">
-                Diet Restrictions:
-                    <select name="diet">
-                        <option value="none">None</option><br>
-                        <option value="pescetarian">Pescatarian</option><br>
-                        <option value="lactovegetarian">Lacto Vegetarian</option><br>
-                        <option value="ovovegetarian">Ovo vegetarian</option><br>
-                        <option value="vegan">Vegan</option><br>
-                        <option value="vegetarian">Vegetarian</option>
-                    </select><br><br>
+<div class="ui container">
+    <div class="ui grid">
+        <div class="eight wide column">
+            <h2>Search For a New Recipe:</h2>
+        </div>
+        <div class="eight wide column">
+            <form action="/recipes">
+                <!-- Diet restrictions -->
+                <div class="ui form">
+                    <div class="field">
+                        Diet Restrictions:
+                        <select name="diet">
+                            <option value="none">None</option>
+                            <br>
+                            <option value="pescetarian">Pescatarian</option>
+                            <br>
+                            <option value="lactovegetarian">Lacto Vegetarian</option>
+                            <br>
+                            <option value="ovovegetarian">Ovo vegetarian</option>
+                            <br>
+                            <option value="vegan">Vegan</option>
+                            <br>
+                            <option value="vegetarian">Vegetarian</option>
+                        </select>
+                        <br>
+                    </div>
                 </div>
-            </div>
-
                 <!-- Intolerances -->
                 <div class="ui form">
                     <div class="inline field">
-                        Intolerance(s): (Select all that apply)<br>
+                        Intolerance(s): (Select all that apply)
+                        <br>
                         <div class="ui checkbox">
                             <input type="checkbox" name="intolerances" value="dairy" tabindex="0" class="hidden">
                             <label>Dairy</label>
-                        </div><br>
-
+                        </div>
+                        <br>
                         <div class="ui checkbox">
                             <input type="checkbox" name="intolerances" value="egg" tabindex="0" class="hidden">
                             <label>Egg</label>
-                        </div><br>
-
+                        </div>
+                        <br>
                         <div class="ui checkbox">
                             <input type="checkbox" name="intolerances" value="gluten" tabindex="0" class="hidden">
                             <label>Gluten</label>
-                        </div><br>
-
+                        </div>
+                        <br>
                         <div class="ui checkbox">
                             <input type="checkbox" name="intolerances" value="peanut" tabindex="0" class="hidden">
                             <label>Peanut</label>
-                        </div><br>
-
+                        </div>
+                        <br>
                         <div class="ui checkbox">
                             <input type="checkbox" name="intolerances" value="sesame" tabindex="0" class="hidden">
                             <label>Sesame</label>
-                        </div><br>
-
+                        </div>
+                        <br>
                         <div class="ui checkbox">
                             <input type="checkbox" name="intolerances" value="seafood" tabindex="0" class="hidden">
                             <label>Seafood</label>
-                        </div><br>
-
+                        </div>
+                        <br>
                         <div class="ui checkbox">
                             <input type="checkbox" name="intolerances" value="shellfish" tabindex="0" class="hidden">
                             <label>Shellfish</label>
-                        </div><br>
-
+                        </div>
+                        <br>
                         <div class="ui checkbox">
                             <input type="checkbox" name="intolerances" value="soy" tabindex="0" class="hidden">
                             <label>Soy</label>
-                        </div><br>
-
+                        </div>
+                        <br>
                         <div class="ui checkbox">
                             <input type="checkbox" name="intolerances" value="sulfite" tabindex="0" class="hidden">
                             <label>Sulfite</label>
-                        </div><br>
-
+                        </div>
+                        <br>
                         <div class="ui checkbox">
                             <input type="checkbox" name="intolerances" value="treenut" tabindex="0" class="hidden">
                             <label>Tree Nut</label>
-                        </div><br>
-
+                        </div>
+                        <br>
                         <div class="ui checkbox">
                             <input type="checkbox" name="intolerances" value="wheat" tabindex="0" class="hidden">
                             <label>Wheat</label>
-                        </div><br>
+                        </div>
+                        <br>
                     </div>
                 </div>
-
-        Search keyword(s): <input type="text" name="query"><br>
-        <input type="submit" value="Find New Recipe(s)">
-    </form>
+                <br>
+                <!-- Keyword search box -->
+                <div class="ui form">
+                    <div class="field">
+                        <label>Search keyword(s):</label>
+                        <input type="text" name="query">
+                    </div>
+                </div>
+                <br>
+                <button class="ui button" type="submit">Find New Recipe(s)</button>
+                <br>
+            </form>
+        </div>
+    </div>
+</div>
 
 <script>
 $('.ui.checkbox')
