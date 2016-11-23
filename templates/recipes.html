@@ -3,39 +3,55 @@
 {% block title %}Recipe Search Results{% endblock %}
 
 {% block content %}
-
-<h2>Recipe Search Results</h2>
-
-<p>Select Recipe(s) You Want to Cook:</p>
-
-<p><form action="/user-recipes.json" method="POST" id="recipes">
-
-    {% for recipe in recipe_info %}
-        <b>Recipe Name: {{ recipe['title'] }}</b><input type="checkbox" name="recipeid" value="{{ recipe['id'] }}"><br>
-        Ready in {{ recipe['readyInMinutes'] }} minutes<br>
-        <img src="{{ recipe['image'] }}"><br>
-        {% if 'sourceName' in recipe %}
-            via <a href="{{ recipe['sourceUrl'] }}">{{ recipe['sourceName'] }}</a><br><br>
-        {% endif %}
-
-        Ingredients:<br>
-        {% for ingredient in recipe['extendedIngredients'] %}
-            {{ ingredient['amount'] }} {{ ingredient['unit'] }} {{ ingredient['name'] }}<br>
-        {% endfor %}<br>
-    {% endfor %}
-    <input type="submit" value="Add Selected Recipe(s)" id="submit">
-    </form><br>
-
+<div class="ui container">
+    <h2>Recipe Search Results</h2>
+    <p>Select Recipe(s) You Want to Cook:</p>
+    <div class="ui stackable grid">
+        <div class="eight wide column">
+            <form action="/user-recipes.json" method="POST" id="recipes">
+                <div class="ui two centered cards">
+                    {% for recipe in recipe_info %}
+                    <div class="card">
+                        <div class="image">
+                            <img src="{{ recipe['image'] }}">
+                        </div>
+                        <div class="content">
+                            <div class="header"><b>{{ recipe['title'] }}</b></div>
+                            <div class="meta">
+                                <a>{% if 'sourceName' in recipe %}
+                                via <a href="{{ recipe['sourceUrl'] }}">{{ recipe['sourceName'] }}</a>
+                                <br>
+                                <br> {% endif %}</a>
+                            </div>
+                            <div class="description">
+                                <p>Ready in {{ recipe['readyInMinutes'] }} minutes</p>
+                                <p>Ingredients:
+                                    <br> {% for ingredient in recipe['extendedIngredients'] %} {{ ingredient['amount'] }} {{ ingredient['unit'] }} {{ ingredient['name'] }}
+                                    <br> {% endfor %}
+                                    <p>Ready in {{ recipe['readyInMinutes'] }} minutes</p>
+                            </div>
+                        </div>
+                        <div class="extra content">
+                            <span class="right floated">
+                            <input type="checkbox" name="recipeid" value="{{ recipe['id'] }}">
+                        </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="ui button" type="submit" id="submit">"Add Selected Recipe(s)"</button>
+            </form>
+        </div>
+    </div>
     <div id="confirm-add-recipe"></div>
-
-    <form action="/new_search" method="GET">
-        <input type="submit" value="Search for More recipes">
-    </form><br>
-    
+    <br>
+    <a href="/new_search" class="ui button">Search for More recipes</a>
+    <br>
+    <br>
     <form action="/shopping_list" method="POST">
-        <input type="submit" value="Generate Shopping List" id="new-list" disabled>
-    </form><br>
-</p>
+        <input type="submit" value="Generate Shopping List" id="new-list" class="ui button" disabled>
+    </form>
+</div>
 
 <script src="/static/js/add-recipe.js"></script>
 
