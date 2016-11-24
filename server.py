@@ -100,6 +100,7 @@ def display_main_page():
         return render_template("main.html", current_ingredients=current_ingredients_list,
                                             pending_shopping_lists=pending_shopping_lists,
                                             pending_recipes_list=pending_recipes_list,
+                                            current_user=current_user.username,
                                             )
     else:
         return render_template("homepage.html")

@@ -1,3 +1,12 @@
 .ui.success.message {
     display: none;
 }
+
+.ui.inverted.segment, .ui.primary.inverted.segment {
+    background: #1d3752;
+    color: rgba(255,255,255,.9);
+}
+
+#main-body {
+    min-height: 750px;
+}

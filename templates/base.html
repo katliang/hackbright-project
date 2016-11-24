@@ -20,7 +20,7 @@
 
       {% if 'user_id' in session %}
         <div class="item">
-          <a href="/logout" class="ui primary button">Log Out</a>
+          <a href="/logout" class="ui primary grey button">Log Out</a>
       </div>
       {% else %}
         <div class="item">
@@ -34,8 +34,8 @@
 <!-- Sidebar Menu -->
 <div class="ui vertical inverted sidebar menu left">
   <a class="active item">Home</a>
-  <a class="item">Login</a>
-  <a class="item">Signup</a>
+  <a href="/login" class="item">Log In</a>
+  <a href="/logout" class="item">Log Out</a>
 </div>
 
 
@@ -51,7 +51,7 @@
         <a href="/main" class="active item">Home</a>
         <div class="right item">
           {% if 'user_id' in session %}
-          <a href="/logout" class="ui inverted primary button">Log Out</a>
+          <a href="/logout" class="ui inverted primary grey button">Log Out</a>
       {% else %}
           <a href="/login" class="ui inverted blue button">Log in</a>
       {% endif %}
@@ -60,7 +60,7 @@
     </div>
 
   </div>
-
+  <div id="main-body">
   <p>{% with messages = get_flashed_messages() %}
              {% if messages %}
                    {% for message in messages %}
@@ -69,8 +69,9 @@
              {% endif %}
           {% endwith %}</p>
 {% block content%}CONTENT HERE{% endblock %}
-
-
+  </div>
+<br>
+<br>
   <div class="ui inverted vertical footer segment">
     <div class="ui container">
       <div class="ui stackable inverted divided equal height stackable grid">
