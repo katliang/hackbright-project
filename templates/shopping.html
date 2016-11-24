@@ -8,12 +8,12 @@
 
 <p>List of Ingredients:</p>
     <ul>
-    {% for ingredient_id, amount, unit, name in ingredients %}
-        <li>{{ '%0.2f' % amount|float }} {{ unit }} {{ name }}</li>
+    {% for aisle in ingredients %}
+        {{ aisle }}
+            {% for ingredient_id, amount, unit, name in ingredients[aisle] %}
+                <li>{{ '%0.2f' % amount|float }} {{ unit }} {{ name }}</li>
+            {% endfor %}<br>
     {% endfor %}
     </ul>
-
-<p><a href="/main">Return to Main Page</a></p>
-<p><a href="/logout">Log Out</a></p>
 
 {% endblock %}

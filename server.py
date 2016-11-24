@@ -222,7 +222,7 @@ def show_shopping_list():
             (converted_amount, base_unit) = convert_to_base_unit(ingredient['amount'], ingredient['unitLong'])
 
             if ingredient['id'] not in aggregated_ingredients:
-                aggregated_ingredients[ingredient['id']] = {'quantity': converted_amount, 'unit': base_unit, 'name': ingredient['name']}
+                aggregated_ingredients[ingredient['id']] = {'quantity': converted_amount, 'unit': base_unit, 'name': ingredient['name'], 'aisle': ingredient['aisle']}
             else:
                 aggregated_ingredients[ingredient['id']]['quantity'] += converted_amount
 
@@ -233,6 +233,7 @@ def show_shopping_list():
             new_ingredient = Ingredient(ingredient_id=ingredient_id,
                                         ingredient_name=aggregated_ingredients[ingredient_id]['name'],
                                         base_unit=aggregated_ingredients[ingredient_id]['unit'],
+                                        ingredient_aisle=aggregated_ingredients[ingredient_id]['aisle'],
                                         )
             db.session.add(new_ingredient)
 
@@ -409,6 +410,7 @@ def add_missing_ingredients():
                 new_missing_ingredient = Ingredient(ingredient_id=missing_ingredient[0],
                                                     ingredient_name=missing_ingredient[3],
                                                     base_unit=missing_ingredient[2],
+                                                    ingredient_aisle=missing_ingredient[4],
                                                     )
                 db.session.add(new_missing_ingredient)
 

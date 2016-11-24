@@ -19,12 +19,12 @@
         {% endif %}
 
         Ingredients in Inventory:<br>
-        {% for ing_id, inventory_amount, base_unit, ingredient_name in results_recipes[recipe]['inventory_ing'] %}
+        {% for _, inventory_amount, base_unit, ingredient_name, _ in results_recipes[recipe]['inventory_ing'] %}
             {{ inventory_amount }} {{ base_unit }} {{ ingredient_name }}<br>
         {% endfor %}<br>
 
         Missing Ingredients to Add to Shopping List:<br>
-        {% for ing_id, missing_amount, base_unit, ingredient_name in results_recipes[recipe]['missing_ing'] %}
+        {% for _, missing_amount, base_unit, ingredient_name, _ in results_recipes[recipe]['missing_ing'] %}
             {{ missing_amount }} {{ base_unit }} {{ ingredient_name }}<br>
         {% endfor %}<br>
     {% endfor %}
@@ -39,7 +39,5 @@
 </p>
 
 <script src="/static/js/recipes-by-ingredient.js"></script>
-
-<p><a href="/main">Return to Main Page</a></p>
 
 {% endblock %}

@@ -5,30 +5,35 @@
 {% block content %}
 
 <h2>Shopping List {{ shopping_list_id }}</h2>
-
-    <p>When purchased, check item and enter amount purchased.</p>
-
-    <p><button type="button" id="select-all">Select All</button></p>
-    <p>{% for (ingredient_id, ingredient_qty, ingredient_unit, ingredient_name) in ingredients %}</p>
-        <form action="/inventory" method="POST" id="shopping_list" data-shopping-list-id="{{ shopping_list_id }}">
-            {{ '%0.2f' % ingredient_qty|float }} {{ ingredient_unit }} {{ ingredient_name }}
+<p>When purchased, check item and enter amount purchased.</p>
+<p>
+    <button type="button" id="select-all">Select All</button>
+</p>
+<ul>{% for aisle in ingredients %}
+    <b>{{ aisle }}</b>
+    <p>{% for ingredient_id, ingredient_qty, ingredient_unit, ingredient_name in ingredients[aisle] %}</p>
+    <form action="/inventory" method="POST" id="shopping_list" data-shopping-list-id="{{ shopping_list_id }}">
+        <li>{{ '%0.2f' % ingredient_qty|float }} {{ ingredient_unit }} {{ ingredient_name }}
             <input type="checkbox" name="ingredient" class="checkbox" data-ingredient-id="{{ ingredient_id }}" data-ingredient-name="{{ ingredient_name }}">
-
             <input type="number" step="0.01" name="quantity" class="quantity" data-default-quantity="{{ '%0.2f' % ingredient_qty|float }}">
-
             <select name="unit" class="unit">
-                    <option value="{{ ingredient_unit }}">{{ ingredient_unit }}</option><br>
-                    <option value="none"> </option><br>
-                    <!-- <option value="ounces">ounces</option><br>
+                <option value="{{ ingredient_unit }}">{{ ingredient_unit }}</option>
+                <br>
+                <option value="none"> </option>
+                <br>
+                <!-- <option value="ounces">ounces</option><br>
                     <option value="pounds">pounds</option><br>
                     <option value="cups">cups</option><br>
                     <option value="servings">serving(s)</option><br> -->
             </select>
-        {% endfor %}<br>
-            <input type="submit" value="Confirm Purchases" id="submit">
-        </form>
-
-<p><a href="/main">Return to Main Page</a></p>
-
+        </li>
+        <br> {% endfor %} {% endfor %}
+</ul>
+<br>
+<input type="submit" value="Confirm Purchases" id="submit">
+</form>
+<br>
+<br>
 <script src="/static/js/list-confirmation.js"></script>
+
 {% endblock %}

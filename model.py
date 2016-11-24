@@ -92,11 +92,11 @@ class User(db.Model):
 
                 if check_inventory:
                     if check_inventory.current_quantity <= 0:
-                        results_recipes[recipe_id]['missing_ing'].append((int(ingredient['id']), converted_amount, base_unit, ingredient['name']))
+                        results_recipes[recipe_id]['missing_ing'].append((int(ingredient['id']), converted_amount, base_unit, ingredient['name'], ingredient['aisle']))
                     else:
-                        results_recipes[recipe_id]['inventory_ing'].append((int(ingredient['id']), converted_amount, base_unit, ingredient['name']))
+                        results_recipes[recipe_id]['inventory_ing'].append((int(ingredient['id']), converted_amount, base_unit, ingredient['name'], ingredient['aisle']))
                 else:
-                    results_recipes[recipe_id]['missing_ing'].append((int(ingredient['id']), converted_amount, base_unit, ingredient['name']))
+                    results_recipes[recipe_id]['missing_ing'].append((int(ingredient['id']), converted_amount, base_unit, ingredient['name'], ingredient['aisle']))
 
         return results_recipes
 
@@ -164,16 +164,21 @@ class ShoppingList(db.Model):
 
         list_ingredients = ListIngredient.query.filter(ListIngredient.shopping_list_id == self.list_id).all()
 
-        all_ingredients = []
+        all_ingredients = {}
 
         for ingredient in list_ingredients:
             ingredient_id = ingredient.ingredient_id
             ingredient_qty = ingredient.aggregate_quantity
             ingredient_unit = ingredient.ingredient.base_unit
             ingredient_name = ingredient.ingredient.ingredient_name
-            all_ingredients.append((ingredient_id, ingredient_qty, ingredient_unit, ingredient_name))
+            ingredient_aisle = ingredient.ingredient.ingredient_aisle
 
-        return sorted(all_ingredients, key=lambda x: x[3])
+            if ingredient_aisle not in all_ingredients:
+                all_ingredients[ingredient_aisle] = [(ingredient_id, ingredient_qty, ingredient_unit, ingredient_name)]
+            else:
+                all_ingredients[ingredient_aisle].append((ingredient_id, ingredient_qty, ingredient_unit, ingredient_name))
+
+        return all_ingredients
 
 
 class ListIngredient(db.Model):
@@ -208,6 +213,7 @@ class Ingredient(db.Model):
     ingredient_id = db.Column(db.Integer, primary_key=True)
     ingredient_name = db.Column(db.String(100), nullable=False)
     base_unit = db.Column(db.String(20), nullable=True)
+    ingredient_aisle = db.Column(db.String(50), nullable=True)
 
 
     def __repr__(self):
