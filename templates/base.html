@@ -15,12 +15,14 @@
 <!-- Following Menu -->
 <div class="ui large top fixed menu transition hidden">
   <div class="ui container">
+  {% if 'user_id' in session %}
     <a href="/main" class="active item">Home</a>
+    {% endif %}
     <div class="right menu">
 
       {% if 'user_id' in session %}
         <div class="item">
-          <a href="/logout" class="ui primary grey button">Log Out</a>
+          <a href="/logout" class="ui primary button">Log Out</a>
       </div>
       {% else %}
         <div class="item">
@@ -41,24 +43,21 @@
 
 <!-- Page Contents -->
 <div class="pusher">
-  <div class="ui inverted vertical masthead center aligned segment">
-
-    <div class="ui container">
-      <div class="ui large secondary inverted pointing menu">
-        <a class="toc item">
-          <i class="sidebar icon"></i>
-        </a>
-        <a href="/main" class="active item">Home</a>
-        <div class="right item">
-          {% if 'user_id' in session %}
-          <a href="/logout" class="ui inverted primary grey button">Log Out</a>
-      {% else %}
-          <a href="/login" class="ui inverted blue button">Log in</a>
-      {% endif %}
+    <div class="ui inverted vertical masthead center aligned segment">
+        <div class="ui container">
+            <div class="ui large secondary inverted pointing menu">
+                <a class="toc item">
+                    <i class="sidebar icon"></i>
+                </a>
+                {% if 'user_id' in session %}
+                <a href="/main" class="active item">Home</a> {% endif %}
+                <div class="right item">
+                    {% if 'user_id' in session %}
+                    <a href="/logout" class="ui inverted primary button">Log Out</a> {% else %}
+                    <a href="/login" class="ui inverted blue button">Log in</a> {% endif %}
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-
   </div>
   <div id="main-body">
   <p>{% with messages = get_flashed_messages() %}
