@@ -60,13 +60,13 @@
         </div>
   </div>
   <div id="main-body">
-  <p>{% with messages = get_flashed_messages() %}
+  {% with messages = get_flashed_messages() %}
              {% if messages %}
                    {% for message in messages %}
                         {{ message }}
                    {% endfor %}
              {% endif %}
-          {% endwith %}</p>
+          {% endwith %}
 {% block content%}CONTENT HERE{% endblock %}
   </div>
 <br>

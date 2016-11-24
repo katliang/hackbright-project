@@ -29,13 +29,6 @@ def homepage():
     return render_template("homepage.html")
 
 
-@app.route("/register", methods=["GET"])
-def registration_form():
-    """ Show registration form."""
-
-    return render_template("registration.html")
-
-
 @app.route("/register", methods=["POST"])
 def register_process():
     """ Verify registration."""
@@ -47,7 +40,7 @@ def register_process():
 
     if check_user:
         flash('This username already exists. Please choose another username.')
-        return redirect("/register")
+        return redirect("/")
     else:
         new_user = User(username=username, password="")
         new_user.set_password(password)
