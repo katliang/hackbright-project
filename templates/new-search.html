@@ -5,16 +5,15 @@
 {% block content %}
 <div class="ui container">
     <div class="ui grid">
+        <div class="four wide column"></div>
         <div class="eight wide column">
             <h2>Search For a New Recipe:</h2>
-        </div>
-        <div class="eight wide column">
             <form action="/recipes">
                 <!-- Diet restrictions -->
                 <div class="ui form">
                     <div class="field">
-                        Diet Restrictions:
-                        <select name="diet">
+                        <label>Diet Restrictions:</label>
+                        <select name="diet" id="diet">
                             <option value="none">None</option>
                             <br>
                             <option value="pescetarian">Pescatarian</option>
@@ -28,12 +27,13 @@
                             <option value="vegetarian">Vegetarian</option>
                         </select>
                         <br>
+                        <br>
                     </div>
                 </div>
                 <!-- Intolerances -->
                 <div class="ui form">
                     <div class="inline field">
-                        Intolerance(s): (Select all that apply)
+                        <label>Intolerance(s):</label>
                         <br>
                         <div class="ui checkbox">
                             <input type="checkbox" name="intolerances" value="dairy" tabindex="0" class="hidden">
@@ -103,15 +103,23 @@
                 <br>
                 <button class="ui button" type="submit">Find New Recipe(s)</button>
                 <br>
+                <br>
             </form>
         </div>
+        <div class="four wide column"></div>
     </div>
 </div>
+
 
 <script>
 $('.ui.checkbox')
   .checkbox()
 ;
+
+$('#diet')
+  .dropdown()
+;
+
 </script>
 
 {% endblock %}
