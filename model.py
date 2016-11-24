@@ -320,7 +320,7 @@ def search_recipes(diet, intolerances, query):
     result_ids = []
     result_recipe_info = []
 
-    search_url = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?diet=" + diet + "&intolerances=" + intolerances + "&number=2&query=" + query
+    search_url = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?diet=" + diet + "&intolerances=" + intolerances + "&number=4&query=" + query
 
     response = call_api(search_url)
 

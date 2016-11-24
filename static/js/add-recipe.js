@@ -1,21 +1,28 @@
 "use strict";
 
-function showRecipeIds(result) {
-    $('#confirm-add-recipe').html('Recipe has been saved. Search for more recipes or generate shopping list.');
+function removeCard(result) {
+    // show confirmation message
+    $('.ui.success.message').show();
+    $('#confirm-add-recipe').html('Recipe has been saved.');
+    var selectorString = '[data-card-recipe-id=' + result['recipe_id'] + ']';
+    // hide card
+    $(selectorString).hide();
+    // enable button to generate shopping list
     $('#new-list').prop('disabled', false);
+
+    // hide message after 2 seconds
+    setTimeout(function() {
+        $('.ui.success.message').hide();
+    }, 2000);
 }
 
-// Creates a list of ids and sends in a dict to route
 function addRecipe(evt) {
-    evt.preventDefault();
-    $('#submit').attr('disabled', true);
-    var recipeIds = [];
-    $(':checkbox:checked').each(function() {
-        recipeIds.push($(this).val());
-    });
-
-    $.post('/user-recipes', {'recipe_ids': recipeIds}, showRecipeIds);
+    // get the id
+    var recipeId = $(this).data('recipe-id')
+    // send it to the route
+    $.post('/user-recipes', {'recipe_id': recipeId}, removeCard);
+    // when you come back, hide the card
 
 }
 
-$('#recipes').on('submit', addRecipe);
+$('.green.button.add-recipe').on('click', addRecipe);

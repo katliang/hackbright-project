@@ -129,24 +129,23 @@ def show_matching_recipes():
 def update_user_recipes():
     """ Keeps track of user's selected recipes."""
 
-    recipe_ids = request.form.getlist("recipe_ids[]")
+    recipe_id = request.form.get("recipe_id")
 
-    for recipe_id in recipe_ids:
-        recipe = Recipe.query.get(int(recipe_id))
-        if not recipe:
-            new_recipe = Recipe(recipe_id=recipe_id,
-                                )
-            db.session.add(new_recipe)
-            db.session.commit()
-
-        new_user_recipe = UserRecipe(user_id=session['user_id'],
-                                     recipe_id=recipe_id,
-                                     status='needs_ingredients',
-                                     )
-        db.session.add(new_user_recipe)
+    recipe = Recipe.query.get(int(recipe_id))
+    if not recipe:
+        new_recipe = Recipe(recipe_id=recipe_id,
+                            )
+        db.session.add(new_recipe)
         db.session.commit()
 
-    return jsonify({})
+    new_user_recipe = UserRecipe(user_id=session['user_id'],
+                                 recipe_id=recipe_id,
+                                 status='needs_ingredients',
+                                 )
+    db.session.add(new_user_recipe)
+    db.session.commit()
+
+    return jsonify({'recipe_id': recipe_id})
 
 
 @app.route("/recipe_detail/<recipe_id>")

@@ -4,14 +4,18 @@
 
 {% block content %}
 <div class="ui container">
-    <h2>Recipe Search Results</h2>
-    <p>Select Recipe(s) You Want to Cook:</p>
     <div class="ui stackable grid">
-        <div class="eight wide column">
-            <form action="/user-recipes.json" method="POST" id="recipes">
-                <div class="ui two centered cards">
+        <div class="row">
+            <div class="sixteen wide column centered">
+                <h2>Recipe Search Results</h2>
+                <p>Select Recipe(s) You Want to Cook:</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="sixteen wide column">
+                <div class="ui four centered cards">
                     {% for recipe in recipe_info %}
-                    <div class="card">
+                    <div class="card" data-card-recipe-id="{{ recipe['id'] }}">
                         <div class="image">
                             <img src="{{ recipe['image'] }}">
                         </div>
@@ -24,34 +28,45 @@
                                 <br> {% endif %}</a>
                             </div>
                             <div class="description">
-                                <p>Ready in {{ recipe['readyInMinutes'] }} minutes</p>
-                                <p>Ingredients:
+                                <p><b>Ingredients:</b>
                                     <br> {% for ingredient in recipe['extendedIngredients'] %} {{ ingredient['amount'] }} {{ ingredient['unit'] }} {{ ingredient['name'] }}
                                     <br> {% endfor %}
-                                    <p>Ready in {{ recipe['readyInMinutes'] }} minutes</p>
+                                    <br>
+                                    <p><i>Ready in {{ recipe['readyInMinutes'] }} minutes</i></p>
                             </div>
                         </div>
-                        <div class="extra content">
-                            <span class="right floated">
-                            <input type="checkbox" name="recipeid" value="{{ recipe['id'] }}">
-                        </span>
+                        <div class="ui bottom attached green button add-recipe" data-recipe-id="{{ recipe['id'] }}">
+                            <i class="add icon"></i> Add Recipe
                         </div>
                     </div>
                     {% endfor %}
                 </div>
-                <button class="ui button" type="submit" id="submit">"Add Selected Recipe(s)"</button>
-            </form>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="row">
+            <div class="four wide column">
+                <a href="/new_search" class="ui button">Search for More recipes</a>
+            </div>
+            <div class="eight wide column">
+                <div class="ui success floating compact centered tiny message">
+                    <div class="header" id="confirm-add-recipe"></div>
+                </div>
+            </div>
+            <div class="four wide column">
+                <form action="/shopping_list" method="POST">
+                    <input type="submit" value="Generate Shopping List" id="new-list" class="ui green button right floated" disabled>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <br>
+            <br>
         </div>
     </div>
-    <div id="confirm-add-recipe"></div>
-    <br>
-    <a href="/new_search" class="ui button">Search for More recipes</a>
-    <br>
-    <br>
-    <form action="/shopping_list" method="POST">
-        <input type="submit" value="Generate Shopping List" id="new-list" class="ui button" disabled>
-    </form>
 </div>
+
 
 <script src="/static/js/add-recipe.js"></script>
 
