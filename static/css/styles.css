@@ -21,3 +21,14 @@
     padding-top: 3cm;
 
 }
+
+#title-header {
+    font-family: 'Fredericka the Great', cursive;
+    font-size: 70px;
+    font-style: bold;
+    padding-top: 1.5cm;
+}
+
+.ui.secondary.inverted.pointing.menu {
+     border-width: 0px;
+}

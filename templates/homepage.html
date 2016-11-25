@@ -1,12 +1,15 @@
 {% extends 'base.html' %}
 
-{% block title %}Homepage{% endblock %}
+{% block title %}ingrediYUM{% endblock %}
 
 {% block content %}
 <div class="ui fluid container" id="homepage-img">
     <div class="ui grid">
-        <div class="ten wide column"></div>
-        <div class="four wide column">
+        <div class="two wide column"></div>
+        <div class="eight wide centered column">
+            <div id="title-header">ingrediYUM</div>
+        </div>
+        <div class="four wide centered column">
             <form class="ui form" action="/register" method="POST">
                 <div class="field">
                     <label>Username</label>
@@ -18,9 +21,10 @@
                 </div>
                 <button class="ui blue button" type="submit">Sign Up</button>
             </form>
-            <div class="two wide column"></div>
         </div>
+        <div class="two wide column"></div>
     </div>
 </div>
+
 
 {% endblock %}
