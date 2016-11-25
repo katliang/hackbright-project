@@ -285,7 +285,7 @@ def example_data():
 
     # Adds sample user recipes.
     u_rec1 = UserRecipe(user_id=1, recipe_id=1, status='needs_ingredients')
-    u_rec2 = UserRecipe(user_id=2, recipe_id=2, status='in_process')
+    u_rec2 = UserRecipe(user_id=2, recipe_id=2, status='in_progress')
 
     db.session.add_all([inv1, inv2, inv3, u_rec1, u_rec2])
     db.session.commit()

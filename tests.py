@@ -1,6 +1,6 @@
 from unittest import TestCase
 from server import app
-from model import connect_to_db, db, example_data, User, UserRecipe, Recipe, ShoppingList
+from model import connect_to_db, db, example_data, User, UserRecipe, Recipe, ShoppingList, convert_to_base_unit
 import os
 import server
 
@@ -17,12 +17,22 @@ class FlaskTestsBasic(TestCase):
         # Show Flask errors that happen during tests
         app.config['TESTING'] = True
 
-    def test_homepage(self):
-        """Test homepage page."""
+    def test_homepage_title(self):
+        """Test title on homepage."""
 
         result = self.client.get("/")
         self.assertIn("ingrediYUM", result.data)
-        self.assertIn("Sign Up", result.data)
+
+    def test_homepage_signup(self):
+        """Test sign up button on homepage."""
+
+        result = self.client.get("/")
+        self.assertIn("Sign Up</button>", result.data)
+
+    def test_homepage_username(self):
+        """Test username field on homepage."""
+
+        result = self.client.get("/")
         self.assertIn("Username", result.data)
 
     def test_login_form(self):
@@ -70,13 +80,20 @@ class FlaskTestsDatabase(TestCase):
         self.assertIn("Log In Here", result.data)
 
     def test_duplicate_registration(self):
-        """ Test duplicate user registration."""
+        """ Test notification to user when username is taken."""
 
         result = self.client.post("/register",
                                   data={"username": "tom", "password": "123"},
                                   follow_redirects=True)
         self.assertIn("This username already exists. Please choose another username.", result.data)
-        self.assertIn("Sign Up", result.data)
+
+    def test_duplicate_registration_redirect(self):
+        """ Test redirect to homepage if registration fails."""
+
+        result = self.client.post("/register",
+                                  data={"username": "tom", "password": "123"},
+                                  follow_redirects=True)
+        self.assertIn("Sign Up</button>", result.data)
 
 
 class FlaskTestsLoggedIn(TestCase):
@@ -115,7 +132,7 @@ class FlaskTestsLoggedIn(TestCase):
         result = self.client.post("/login",
                                   data={"username": "tom", "password": "123"},
                                   follow_redirects=True)
-        self.assertIn("Main Page", result.data)
+        self.assertIn("Welcome tom!", result.data)
 
     def test_wrong_password_login(self):
         """ Test unsuccessful user login with wrong password."""
@@ -133,12 +150,17 @@ class FlaskTestsLoggedIn(TestCase):
                                   follow_redirects=True)
         self.assertIn("Log In Here", result.data)
 
-    def test_new_search_form(self):
-        """ Test new search form page."""
+    def test_new_search_form_diet(self):
+        """ Test diet field on new search form page."""
 
         result = self.client.get("/new_search")
         self.assertIn('<select name="diet"', result.data)
-        self.assertIn('Find New Recipe(s)', result.data)
+
+    def test_new_search_form(self):
+        """ Test find recipe button on new search form page."""
+
+        result = self.client.get("/new_search")
+        self.assertIn('Find New Recipe(s)</button>', result.data)
 
     def test_user_repr(self):
         """ Test representation of a user."""
@@ -176,6 +198,26 @@ class FlaskTestsLoggedIn(TestCase):
         result = self.client.get("/logout")
         self.assertIn("You Have Logged Out", result.data)
 
+    def test_convert_to_base_unit_pounds(self):
+        """ Test conversion from pounds to ounces."""
+
+        self.assertEqual(convert_to_base_unit(2, 'pounds'), (32.00, 'ounces'))
+
+    def test_convert_to_base_unit_tsp(self):
+        """ Test conversion from tablespoons to teaspoons."""
+
+        self.assertEqual(convert_to_base_unit(2, 'tbsp'), (6, 'teaspoons'))
+
+    def test_incorrect_convert_to_base_unit(self):
+        """ Test incorrect conversion."""
+
+        self.assertNotEqual(convert_to_base_unit(2, 'pounds'), (2, 'ounces'))
+
+    def test_convert_to_base_other(self):
+        """ Test other units."""
+
+        self.assertEqual(convert_to_base_unit(2, 'servings'), (2, 'servings'))
+
 
 class MockFlaskTests(TestCase):
     """Flask tests with mocking."""
@@ -210,19 +252,19 @@ class MockFlaskTests(TestCase):
                     "sourceName": "Test Source Recipe",
                     "extendedIngredients": [
                                             {"id": 1,
-                                            "aisle": "Seafood",
-                                            "image": "salmon.png",
-                                            "name": "salmon",
-                                            "amount": 2,
-                                            "unit": "pounds"},
+                                            "aisle": "Fruit",
+                                            "image": "apple.png",
+                                            "name": "apple",
+                                            "amount": 1,
+                                            "unit": "pound"},
                                             {"id": 2,
-                                            "aisle": "Seasoning",
-                                            "image": "salt.jpg",
-                                            "name": "salt",
-                                            "amount": 2,
-                                            "unit": "tbsp"}
+                                            "aisle": "Fruit",
+                                            "image": "banana.jpg",
+                                            "name": "banana",
+                                            "amount": 3,
+                                            "unit": "ounces"}
                                             ],
-                    "id": 100,
+                    "id": 1,
                     "title": "Test Recipe",
                     "readyInMinutes": 60,
                     "image": "/recipe.jpg",
@@ -238,22 +280,35 @@ class MockFlaskTests(TestCase):
         db.session.close()
         db.drop_all()
 
-    def test_show_recipe_details_with_mock(self):
-        """ Test details displayed for a recipe."""
+    def test_show_recipe_title_with_mock(self):
+        """ Test title displayed for a recipe."""
 
         result = self.client.get("/recipe_detail/100")
-        self.assertIn("Test Recipe", result.data)
-        self.assertIn("testrecipe.com", result.data)
-        self.assertIn("Test Source Recipe", result.data)
-        self.assertIn("/recipe.jpg", result.data)
-        self.assertIn("40", result.data)
-        self.assertIn("60", result.data)
-        self.assertIn("Test Source Recipe", result.data)
-        self.assertIn("4", result.data)
-        self.assertIn("2.00 pounds salmon", result.data)
-        self.assertNotIn("2 tbsp salt", result.data)
-        self.assertIn("Recipe instructions here.", result.data)
-        self.assertIn("Cook me!", result.data)
+        self.assertIn("<h2>Test Recipe", result.data)
+
+    def test_show_recipe_image_with_mock(self):
+        """ Test image displayed for a recipe."""
+
+        result = self.client.get("/recipe_detail/100")
+        self.assertIn('<img src="/recipe.jpg">', result.data)
+
+    def test_show_recipe_ingredient_with_mock(self):
+        """ Test an ingredient displayed for a recipe."""
+
+        result = self.client.get("/recipe_detail/100")
+        self.assertIn("1.00 pound apple", result.data)
+
+    def test_incorrect_recipe_ingredient_with_mock(self):
+        """ Test an incorrect ingredient amount for a recipe."""
+
+        result = self.client.get("/recipe_detail/100")
+        self.assertNotIn("3 ounces banana", result.data)
+
+    def test_show_recipe_button_with_mock(self):
+        """ Test cook button for a recipe."""
+
+        result = self.client.get("/recipe_detail/100")
+        self.assertIn("Cook me!</button>", result.data)
 
 
 if __name__ == "__main__":
