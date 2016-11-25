@@ -360,6 +360,24 @@ def convert_to_base_unit(amount, input_unit):
     else:
         return (amount, input_unit)
 
+def aggregate_ingredients(all_user_recipes):
+    """ Aggregates ingredients."""
+
+    aggregated_ingredients = {}
+
+    for recipe_id in all_user_recipes:
+        recipe_info = recipe_info_by_id(recipe_id[0])
+
+        for ingredient in recipe_info['extendedIngredients']:
+            (converted_amount, base_unit) = convert_to_base_unit(ingredient['amount'], ingredient['unitLong'])
+
+            if ingredient['id'] not in aggregated_ingredients:
+                aggregated_ingredients[ingredient['id']] = {'quantity': converted_amount, 'unit': base_unit, 'name': ingredient['name'], 'aisle': ingredient['aisle']}
+            else:
+                aggregated_ingredients[ingredient['id']]['quantity'] += converted_amount
+
+    return aggregated_ingredients
+
 
 if __name__ == "__main__":
 

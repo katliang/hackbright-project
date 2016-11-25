@@ -2,7 +2,7 @@
 
 from flask import Flask, render_template, request, session, jsonify, flash, redirect
 from flask_debugtoolbar import DebugToolbarExtension
-from model import search_recipes, recipe_info_by_id, convert_to_base_unit, search_api_by_ingredient
+from model import search_recipes, recipe_info_by_id, convert_to_base_unit, search_api_by_ingredient, aggregate_ingredients
 from model import User
 from model import UserRecipe
 from model import Recipe
@@ -207,18 +207,7 @@ def show_shopping_list():
                                     )
     db.session.add(new_shopping_list)
 
-    aggregated_ingredients = {}
-
-    for recipe_id in all_user_recipes:
-        recipe_info = recipe_info_by_id(recipe_id[0])
-        
-        for ingredient in recipe_info['extendedIngredients']:
-            (converted_amount, base_unit) = convert_to_base_unit(ingredient['amount'], ingredient['unitLong'])
-
-            if ingredient['id'] not in aggregated_ingredients:
-                aggregated_ingredients[ingredient['id']] = {'quantity': converted_amount, 'unit': base_unit, 'name': ingredient['name'], 'aisle': ingredient['aisle']}
-            else:
-                aggregated_ingredients[ingredient['id']]['quantity'] += converted_amount
+    aggregated_ingredients = aggregate_ingredients(all_user_recipes)
 
     for ingredient_id in aggregated_ingredients:
         ingredient = db.session.query(Ingredient).filter(Ingredient.ingredient_id == ingredient_id).first()
