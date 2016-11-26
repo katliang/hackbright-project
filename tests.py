@@ -1,8 +1,9 @@
 from unittest import TestCase
 from server import app
-from model import connect_to_db, db, example_data, User, UserRecipe, Recipe, ShoppingList, convert_to_base_unit
+from model import connect_to_db, db, example_data, User, UserRecipe, Recipe, ShoppingList, convert_to_base_unit, aggregate_ingredients, search_recipes
 import os
 import server
+import model
 
 
 class FlaskTestsBasic(TestCase):
@@ -219,8 +220,8 @@ class FlaskTestsLoggedIn(TestCase):
         self.assertEqual(convert_to_base_unit(2, 'servings'), (2, 'servings'))
 
 
-class MockFlaskTests(TestCase):
-    """Flask tests with mocking."""
+class MockTests(TestCase):
+    """Tests with mocking."""
 
     def setUp(self):
         """ Things to do before every test."""
@@ -244,8 +245,9 @@ class MockFlaskTests(TestCase):
             with c.session_transaction() as sess:
                 sess['user_id'] = 1
 
-        # Make mock data
         def _mock_recipe_info_by_id(recipe_id):
+            """ Mock data of recipe info."""
+
             return {"servings": 4,
                     "preparationMinutes": 40,
                     "sourceUrl": "testrecipe.com",
@@ -256,13 +258,15 @@ class MockFlaskTests(TestCase):
                                             "image": "apple.png",
                                             "name": "apple",
                                             "amount": 1,
-                                            "unit": "pound"},
+                                            "unit": "pound",
+                                            "unitLong": "pound"},
                                             {"id": 2,
                                             "aisle": "Fruit",
                                             "image": "banana.jpg",
                                             "name": "banana",
                                             "amount": 3,
-                                            "unit": "ounces"}
+                                            "unit": "ounces",
+                                            "unitLong": "ounces"}
                                             ],
                     "id": 1,
                     "title": "Test Recipe",
@@ -272,6 +276,7 @@ class MockFlaskTests(TestCase):
                     }
 
         server.recipe_info_by_id = _mock_recipe_info_by_id
+        model.recipe_info_by_id = _mock_recipe_info_by_id
 
     def tearDown(self):
         """ Things to do after every test."""
@@ -309,6 +314,34 @@ class MockFlaskTests(TestCase):
 
         result = self.client.get("/recipe_detail/100")
         self.assertIn("Cook me!</button>", result.data)
+
+    def test_aggregate_ingredients_one_recipe(self):
+        """ Test aggregation function with one recipe."""
+
+        self.assertEqual(aggregate_ingredients([('1',)]), ({1: {'quantity': 16.00,
+                                                                'unit': 'ounces',
+                                                                'name': 'apple',
+                                                                'aisle': 'Fruit'},
+                                                            2: {'quantity': 3.00,
+                                                                'unit': 'ounces',
+                                                                'name': 'banana',
+                                                                'aisle': 'Fruit'}
+                                                            })
+                        )
+
+    def test_aggregate_ingredients_two_recipes(self):
+        """ Test aggregation function with two recipes."""
+
+        self.assertEqual(aggregate_ingredients([('1',), ('1',)]), ({1: {'quantity': 32.00,
+                                                                      'unit': 'ounces',
+                                                                      'name': 'apple',
+                                                                      'aisle': 'Fruit'},
+                                                                    2: {'quantity': 6.00,
+                                                                      'unit': 'ounces',
+                                                                      'name': 'banana',
+                                                                      'aisle': 'Fruit'}
+                                                                    })
+                        )
 
 
 if __name__ == "__main__":

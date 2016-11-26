@@ -361,7 +361,7 @@ def convert_to_base_unit(amount, input_unit):
         return (amount, input_unit)
 
 def aggregate_ingredients(all_user_recipes):
-    """ Aggregates ingredients."""
+    """ Takes a list of recipe ids and aggregates ingredients."""
 
     aggregated_ingredients = {}
 
@@ -379,8 +379,8 @@ def aggregate_ingredients(all_user_recipes):
     return aggregated_ingredients
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    from server import app
-    connect_to_db(app)
-    print 'Connected to DB'
+#     from server import app
+#     connect_to_db(app)
+#     print 'Connected to DB'
