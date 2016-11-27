@@ -1,6 +1,3 @@
-.ui.success.message {
-    display: none;
-}
 
 .ui.inverted.segment, .ui.primary.inverted.segment {
     background: #1d3752;
@@ -35,4 +32,8 @@
 
 .ui.card, .ui.cards>.card.confirm-list{
      width: 500px;
+}
+
+.top-header {
+    padding-top: 3cm;
 }

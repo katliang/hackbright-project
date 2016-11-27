@@ -2,7 +2,7 @@
 
 function removeCard(result) {
     // show confirmation message
-    $('.ui.success.message').show();
+    $('#saved-msg').toggleClass('hidden');
     $('#confirm-add-recipe').html('Recipe has been saved.');
     var selectorString = '[data-card-recipe-id=' + result['recipe_id'] + ']';
     // hide card
@@ -12,7 +12,7 @@ function removeCard(result) {
 
     // hide message after 2 seconds
     setTimeout(function() {
-        $('.ui.success.message').hide();
+        $('#saved-msg').toggleClass('hidden');
     }, 2000);
 }
 

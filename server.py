@@ -46,14 +46,14 @@ def register_process():
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
-        return redirect("/login")
+        return render_template("login.html", just_registered=True)
 
 
 @app.route("/login", methods=["GET"])
 def login_form():
     """ Show login form."""
 
-    return render_template("login.html")
+    return render_template("login.html", just_registered=False)
 
 
 @app.route("/login", methods=["POST"])
