@@ -32,3 +32,7 @@
 .ui.secondary.inverted.pointing.menu {
      border-width: 0px;
 }
+
+.ui.card, .ui.cards>.card.confirm-list{
+     width: 500px;
+}
