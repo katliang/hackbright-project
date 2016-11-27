@@ -421,7 +421,7 @@ def logs_user_out():
 
 if __name__ == "__main__":
     # the toolbar is only enabled in debug mode:
-    app.debug = True
+    app.debug = False
     connect_to_db(app)
     DebugToolbarExtension(app)
     app.run(host="0.0.0.0")
