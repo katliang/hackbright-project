@@ -4,43 +4,59 @@
 
 {% block content %}
 
-<h2>{{ recipe_details.title }}</h2>
+<div class="ui container">
+    <div class="ui stackable grid">
+        <div class="row">
+            <div class="sixteen wide column centered">
+            </div>
+        </div>
+        <div class="row">
+            <div class="sixteen wide column">
+                <div class="ui centered card">
+                    {% if 'image' in recipe_details %}
+                    <div class="image">
+                        <img src="{{ recipe_details.image }}">
+                    </div>
+                    {% endif %}
+                    <div class="content">
+                        <h2 class="header">{{ recipe_details.title }}</h2>
+                        <div class="meta">
+                            {% if 'sourceName' in recipe_details %} via <a href="{{ recipe_details.sourceUrl }}">{{ recipe_details.sourceName }}</a>
+                            <br>
+                            <br> {% endif %}
+                        </div>
+                        <div class="description">
+                            <b>Ingredients:</b><br>
+                            {% for ingredient in recipe_details.extendedIngredients %}
+                                {{ '%0.2f' % ingredient.amount|float }} {{ ingredient.unit }} {{ ingredient.name }}<br>
+                            {% endfor %}<br>
 
-{% if 'sourceName' in recipe_details %}
-<p>Recipe courtesy of <a href="{{ recipe_details.sourceUrl }}">{{ recipe_details.sourceName }}</a>
-{% endif %}
+                            {% if 'preparationMinutes' in recipe_details %}
+                                <b>Total preparation time:</b> {{ recipe_details.preparationMinutes }} minutes<br><br>
+                            {% endif %}
 
-{% if 'image' in recipe_details %}
-<p><img src="{{ recipe_details.image }}">
-{% endif %}
+                            {% if 'readyInMinutes' in recipe_details %}
+                                <b>Ready in:</b> {{ recipe_details.readyInMinutes }} minutes<br><br>
+                            {% endif %}
 
-{% if 'preparationMinutes' in recipe_details %}
-<p>Total preparation time: {{ recipe_details.preparationMinutes }} minutes</p>
-{% endif %}
+                            {% if 'servings' in recipe_details %}
+                                <b>Servings:</b> {{ recipe_details.servings }}<br><br>
+                            {% endif %}
 
-{% if 'readyInMinutes' in recipe_details %}
-<p>Ready in {{ recipe_details.readyInMinutes }} minutes</p>
-{% endif %}
-
-{% if 'servings' in recipe_details %}
-<p>Servings: {{ recipe_details.servings }}</p>
-{% endif %}
-
-<p>Ingredients:</p><br>
-    {% for ingredient in recipe_details.extendedIngredients %}
-        {{ '%0.2f' % ingredient.amount|float }} {{ ingredient.unit }} {{ ingredient.name }}<br>
-    {% endfor %}<br>
-
-<p>Directions:</p><br>
-{% if 'instructions' in recipe_details %}
-    {{ recipe_details.instructions }}
-{% else %}
-    <p>Please see <a href="{{ recipe_details.sourceUrl }}">{{ recipe_details.sourceName }}</a> for more details.</p>
-{% endif %}<br>
-
-<p><button type="button" id="cook-recipe" data-recipe-id="{{ recipe_details.id }}">Cook me!</button></p>
-
-<p>Want to cook this later? <a href="/main">Return to Main Page</a></p>
+                            <b>Directions:</b><br>
+                            {% if 'instructions' in recipe_details %}
+                                {{ recipe_details.instructions }}
+                            {% else %}
+                                <p>Please see <a href="{{ recipe_details.sourceUrl }}">{{ recipe_details.sourceName }}</a> for more details.</p>
+                            {% endif %}<br>
+                        </div>
+                    </div>
+                    <div class="ui bottom attached green button add-recipe" id="cook-recipe" data-recipe-id="{{ recipe_details.id }}">Cook me!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="/static/js/recipe-info.js"></script>
 
