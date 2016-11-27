@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="ui container">
-    <h1>Welcome {{ current_user }}!</h1>
+    <h1 class="page-header">Welcome {{ current_user }}!</h1>
 <div class="ui stackable grid">
   <div class="eight wide column">
 
@@ -58,7 +58,7 @@
   </div>
   <div class="sixteen wide column">
       <div class="ui floating message">
-  <p>Recipe Search:</p>
+  <p><b>Recipe Search:</b></p>
       {% if current_ingredients|length > 0 %}
             <a href="/display_inventory" class="ui grey button">Search by Ingredient(s)</a>
         {% endif %}

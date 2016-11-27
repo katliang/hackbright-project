@@ -69,7 +69,6 @@ def login_process():
         check_password = check_user.check_password(password)
         if check_password:
             session['user_id'] = check_user.user_id
-            flash("You are logged in")
             return redirect("/main")
         else:
             flash("Incorrect username and/or password. Please try again.")

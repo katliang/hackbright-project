@@ -30,10 +30,11 @@
      border-width: 0px;
 }
 
-.ui.card, .ui.cards>.card.confirm-list{
-     width: 500px;
-}
-
 .top-header {
     padding-top: 3cm;
+}
+
+.page-header {
+    padding-top: 0.5cm;
+    padding-bottom: 0.5cm;
 }

@@ -9,6 +9,7 @@
         <div class="six wide column"></div>
         <div class="four wide centered column">
 
+        <!-- only show this message if user just registered -->
         {% if just_registered %}
         <div class="ui success message">
             <i class="close icon"></i>
@@ -19,37 +20,23 @@
         </div>
         {% endif %}
 
-            <div id="header"><h2 class="top-header">Log In Here</h2></div>
-            <br>
-            <br>
-            <form class="ui form" action="/login" method="POST">
-                    <div class="field">
-                        <label>Username</label>
-                        <input type="text" name="username" placeholder="Username" required>
-                    </div>
-                    <div class="field">
-                        <label>Password</label>
-                        <input type="password" name="password" placeholder="Password" required>
-                    </div>
-                    <button class="ui blue button" type="submit">Log In</button>  <a href="/" class="ui button right floated">Not registered yet?</a>
-                </form>
+        <div id="header"><h2 class="top-header">Log In Here</h2></div>
+        <br>
+        <br>
+        <form class="ui form" action="/login" method="POST">
+                <div class="field">
+                    <label>Username</label>
+                    <input type="text" name="username" placeholder="Username" required>
+                </div>
+                <div class="field">
+                    <label>Password</label>
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <button class="ui blue button" type="submit">Log In</button>  <a href="/" class="ui button right floated">Not registered yet?</a>
+            </form>
         </div>
         <div class="six wide column"></div>
     </div>
 </div>
 
-
-
-
-
-<!-- <h2>Log In Here</h2>
-
-<form action="/login" method="POST">
-    Username: <input type="text" name="username" required><br>
-    Password: <input type="password" name="password" required><br>
-    <input type="submit" value="Log In">
-</form> 
-
-<a href="/register">Not registered yet? Please register here.</a>
- -->
 {% endblock %}

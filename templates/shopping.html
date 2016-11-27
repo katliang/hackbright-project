@@ -3,35 +3,38 @@
 {% block title %}Shopping List{% endblock %}
 
 {% block content %}
-<br>
 <div class="ui container">
+<div class="page-header"></div>
     <div class="ui grid">
-        <div class="four wide column"></div>
-        <div class="eight wide column">
-            <div class="ui centered card">
-                <div class="content">
-                    <div class="header"><i class="shopping basket icon"></i>Shopping List</div>
-                </div>
-                <div class="content">
-                    {% for aisle in ingredients %}
-                    <h2 class="ui sub header shopping-list">{{ aisle }}</h2>
-                    <div class="ui small feed">
-                        {% for ingredient_id, amount, unit, name in ingredients[aisle] %}
-                        <div class="event">
-                            <div class="content">
-                                <div class="summary">
-                                    <i class="right triangle icon"></i>{{ '%0.2f' % amount|float }} {{ unit }} {{ name }}
+        <div class="three column row">
+            <div class="column"></div>
+            <div class="column">
+                <div class="ui centered card">
+                    <div class="content">
+                        <div class="header"><i class="shopping basket icon"></i>Shopping List</div>
+                    </div>
+                    <div class="content">
+                        {% for aisle in ingredients %}
+                        <h2 class="ui sub header shopping-list">{{ aisle }}</h2>
+                        <div class="ui small feed">
+                            {% for ingredient_id, amount, unit, name in ingredients[aisle] %}
+                            <div class="event">
+                                <div class="content">
+                                    <div class="summary">
+                                        <i class="right triangle icon"></i>{{ '%0.2f' % amount|float }} {{ unit }} {{ name }}
+                                    </div>
                                 </div>
                             </div>
+                            {% endfor %}
                         </div>
                         {% endfor %}
                     </div>
-                    {% endfor %}
                 </div>
             </div>
+            <div class="column"></div>
         </div>
-        <div class="four wide column"></div>
     </div>
 </div>
+
 
 {% endblock %}
