@@ -337,33 +337,29 @@ def show_search_by_results():
 def add_recipe_id():
     """ Adds selected recipe in which there are missing ingredients for shopping list."""
 
-    # Get recipe ids for recipes selected by user
-    selected_recipes = request.form.getlist('recipe-ids[]')
+    # Get recipe id for recipe selected by user
+    recipe_id = request.form.get('recipe_id')
 
-    for recipe_id in selected_recipes:
-        # Convert from unicode
-        recipe_id = int(recipe_id)
+    # Check if recipe id already exists
+    recipe = Recipe.query.get(int(recipe_id))
 
-        # Check if recipe id already exists
-        recipe = Recipe.query.get(recipe_id)
+    # If recipe does not already exist, add it
+    if not recipe:
+        new_recipe = Recipe(recipe_id=recipe_id,
+                            )
+        db.session.add(new_recipe)
+        db.session.commit()
 
-        # If recipe does not already exist, add it
-        if not recipe:
-            new_recipe = Recipe(recipe_id=recipe_id,
-                                )
-            db.session.add(new_recipe)
-            db.session.commit()
-
-        # Add recipe with status 'needs_missing_ingredients'
-        new_user_recipe = UserRecipe(user_id=session['user_id'],
-                                     recipe_id=recipe_id,
-                                     status='needs_missing_ingredients',
-                                     )
-        db.session.add(new_user_recipe)
+    # Add recipe with status 'needs_missing_ingredients'
+    new_user_recipe = UserRecipe(user_id=session['user_id'],
+                                 recipe_id=recipe_id,
+                                 status='needs_missing_ingredients',
+                                 )
+    db.session.add(new_user_recipe)
 
     db.session.commit()
 
-    return jsonify({'result': True})
+    return jsonify({'recipe_id': recipe_id})
 
 
 @app.route("/partial_shopping_list", methods=['POST'])

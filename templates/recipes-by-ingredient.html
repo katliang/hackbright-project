@@ -4,39 +4,68 @@
 
 {% block content %}
 
-<h2>Recipe Search Results</h2>
+<div class="ui container">
+    <div class="ui stackable grid">
+        <div class="row">
+            <div class="sixteen wide column centered">
+                <h2 class="page-header">Recipe Search Results</h2>
+                <p>Select Recipe(s) You Want to Cook:</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="sixteen wide column">
+                <div class="ui four centered cards">
+                    {% for recipe in results_recipes %}
+                    <div class="card" data-card-recipe-id="{{ recipe }}">
+                        <div class="image">
+                            <img src="{{ results_recipes[recipe]['info']['image'] }}">
+                        </div>
+                        <div class="content">
+                            <div class="header"><b>{{ results_recipes[recipe]['info']['title'] }}</b></div>
+                            <div class="meta">
+                                {% if 'sourceName' in results_recipes[recipe]['info'] %}
+                                via <a href="{{ results_recipes[recipe]['info']['sourceUrl'] }}">{{ results_recipes[recipe]['info']['sourceName'] }}</a>
+                                <br>
+                                <br> {% endif %}
+                            </div>
+                            <div class="description">
+                                <b>Ingredients in Inventory:</b><br>
+                                {% for _, inventory_amount, base_unit, ingredient_name, _ in results_recipes[recipe]['inventory_ing'] %}
+                                    {{ inventory_amount }} {{ base_unit }} {{ ingredient_name }}<br>
+                                {% endfor %}<br>
 
-<p>Select Recipe(s) You Want to Cook:</p>
-
-<p><form action="/add-recipe-id" method="POST" id="add-recipe">
-
-    {% for recipe in results_recipes %}
-        <b>Recipe Name: {{ results_recipes[recipe]['info']['title'] }}</b><input type="checkbox" name="recipeid" data-recipe-id="{{ recipe }}"><br>
-        Ready in {{ results_recipes[recipe]['info']['readyInMinutes'] }} minutes<br>
-        <img src="{{ results_recipes[recipe]['info']['image'] }}"><br>
-        {% if 'sourceName' in results_recipes[recipe]['info'] %}
-            via <a href="{{ results_recipes[recipe]['info']['sourceUrl'] }}">{{ results_recipes[recipe]['info']['sourceName'] }}</a><br><br>
-        {% endif %}
-
-        Ingredients in Inventory:<br>
-        {% for _, inventory_amount, base_unit, ingredient_name, _ in results_recipes[recipe]['inventory_ing'] %}
-            {{ inventory_amount }} {{ base_unit }} {{ ingredient_name }}<br>
-        {% endfor %}<br>
-
-        Missing Ingredients to Add to Shopping List:<br>
-        {% for _, missing_amount, base_unit, ingredient_name, _ in results_recipes[recipe]['missing_ing'] %}
-            {{ missing_amount }} {{ base_unit }} {{ ingredient_name }}<br>
-        {% endfor %}<br>
-    {% endfor %}
-    <input type="submit" value="Add Selected Recipe(s)" id="add-submit-button">
-    </form><br>
-
-    <div id="confirm-add"></div>
-    
-    <form action="/partial_shopping_list" method="POST">
-        <input type="submit" value="Generate Shopping List" id="create-list" disabled><br>
-    </form>
-</p>
+                                <b>Missing Ingredients to Add to Shopping List:</b><br>
+                                {% for _, missing_amount, base_unit, ingredient_name, _ in results_recipes[recipe]['missing_ing'] %}
+                                    {{ missing_amount }} {{ base_unit }} {{ ingredient_name }}<br>
+                                {% endfor %}<br>
+                                <p><i>Ready in {{ results_recipes[recipe]['info']['readyInMinutes'] }} minutes</i></p>
+                            </div>
+                        </div>
+                        <div class="ui bottom attached green button add-more-recipes" data-recipe-id="{{ recipe }}">
+                            <i class="add icon"></i> Add Recipe
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="row">
+            <div class="four wide column"></div>
+            <div class="eight wide column">
+                <div class="ui success floating compact centered tiny message hidden" id="another-saved-msg">
+                    <div class="header" id="confirm-add""></div>
+                </div>
+            </div>
+            <div class="four wide column">
+                <form action="/partial_shopping_list" method="POST">
+                    <input type="submit" value="Generate Shopping List" id="create-list" class="ui green button right floated" disabled>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="/static/js/recipes-by-ingredient.js"></script>
 
