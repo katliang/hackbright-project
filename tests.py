@@ -22,7 +22,7 @@ class FlaskTestsBasic(TestCase):
         """Test title on homepage."""
 
         result = self.client.get("/")
-        self.assertIn("ingrediYUM", result.data)
+        self.assertIn("IngrediYUM", result.data)
 
     def test_homepage_signup(self):
         """Test sign up button on homepage."""
@@ -197,7 +197,7 @@ class FlaskTestsLoggedIn(TestCase):
         """ Test user log out."""
 
         result = self.client.get("/logout")
-        self.assertIn("You Have Logged Out", result.data)
+        self.assertIn("Goodbye", result.data)
 
     def test_convert_to_base_unit_pounds(self):
         """ Test conversion from pounds to ounces."""
@@ -289,7 +289,7 @@ class MockTests(TestCase):
         """ Test title displayed for a recipe."""
 
         result = self.client.get("/recipe_detail/100")
-        self.assertIn("<h2>Test Recipe", result.data)
+        self.assertIn("Test Recipe</h2>", result.data)
 
     def test_show_recipe_image_with_mock(self):
         """ Test image displayed for a recipe."""
@@ -313,7 +313,7 @@ class MockTests(TestCase):
         """ Test cook button for a recipe."""
 
         result = self.client.get("/recipe_detail/100")
-        self.assertIn("Cook me!</button>", result.data)
+        self.assertIn("Cook me!</div>", result.data)
 
     def test_aggregate_ingredients_one_recipe(self):
         """ Test aggregation function with one recipe."""
