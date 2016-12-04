@@ -297,7 +297,7 @@ def call_api(url):
     # These code snippets use an open-source library. http://unirest.io/python
     response = unirest.get(url,
         headers={
-        "X-Mashape-Key": os.environ["secret_key"],
+        "X-Mashape-Key": os.environ["SPOONACULAR_SECRET_KEY"],
         "Accept": "application/json"
                 }
     )

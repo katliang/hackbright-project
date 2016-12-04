@@ -17,7 +17,7 @@ import os
 
 app = Flask(__name__)
 
-app.secret_key = os.environ["secretkey"]
+app.secret_key = os.environ["FLASK_SECRET_KEY"]
 
 # Raises an error if an undefined variable is used in Jinja2
 app.jinja_env.undefined = StrictUndefined
