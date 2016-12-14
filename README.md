@@ -4,6 +4,7 @@ IngrediYUM provides the hungry user with an all-in-one tool to discover recipes,
 
 ##Contents
 * [Technologies](#technologies)
+* [Features](#features)
 * [Installation](#install)
 
 ## <a name="technologies"></a>Technologies
@@ -11,6 +12,24 @@ IngrediYUM provides the hungry user with an all-in-one tool to discover recipes,
 Backend: Python, Flask, PostgreSQL, SQLAlchemy<br/>
 Frontend: JavaScript, jQuery, AJAX, Jinja2, Semantic UI, HTML5, CSS<br/>
 API: Spoonacular API<br/>
+
+## <a name="features"></a>Features
+
+![alt tag](http://g.recordit.co/hj1bpmGT3D.gif)
+
+This Flask application has a home page with a form for new users to sign up and a button for returning users to log in.<br>
+Passwords are hashed and salted before storing in the PostgreSQL database.
+
+![alt tag](http://g.recordit.co/JgF8w6mcPB.gif)
+
+After the user logs in, a dashboard utilizing 3 SQLAlchemy queries displays the user's current inventory, pending shopping lists, and selected recipes to cook.<br>
+
+A new user is assumed to not have existing inventory.<br>
+The user can search for a new recipe by clicking on the "Search for New Recipe" button.
+
+![alt tag](http://g.recordit.co/onauod7rc3.gif)
+
+When the form is submitted, the server makes a call to the Spoonacular API using the user's inputs.
 
 ## <a name="install"></a>Installation
 
