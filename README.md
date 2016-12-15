@@ -29,7 +29,27 @@ The user can search for a new recipe by clicking on the "Search for New Recipe" 
 
 ![alt tag](http://g.recordit.co/onauod7rc3.gif)
 
-When the form is submitted, the server makes a call to the Spoonacular API using the user's inputs.
+When the form is submitted, the server makes a call to the Spoonacular API using the user's inputs. The API returns the recipe data, which is then rendered for the user to review.
+
+![alt tag](http://g.recordit.co/GbLEeCtK3Z.gif)
+
+When the user clicks on the "Add Recipe" button, an AJAX call posts that recipe's id to the database and marks it as "needs ingredients". That recipe card is then hidden and a confirmation message is displayed using JQuery.
+
+The user can add one or more recipes and proceed by clicking on the "Generate Shopping List" button. In this example, we'll also add a second recipe (not shown in the image above). The server then calls the Spoonacular API for recipe data for each recipe that needs ingredients.
+
+![alt tag](http://g.recordit.co/BfCcsEwJAr.gif)
+
+The API returns the recipe data and the ingredients are converted to a base unit, aggregated and categorized before rendering on the shopping list page.
+
+![alt tag](http://g.recordit.co/Cy32HhXfnW.gif)
+
+When the user returns to the dashboard, the queries now return the pending shopping list and selected recipe names.
+
+Other features not shown:
+- The user can confirm ingredients purchased in their pending shopping list(s).
+- The user can view their selected recipes' details and indicate that they've cooked it.
+- The user's current inventory will be updated accordingly: ingredients will be added when purchased and subtracted when recipes are cooked.
+- The user can search for a new recipe using a leftover ingredient(s) and generate a shopping list with only missing ingredients to buy.
 
 ## <a name="install"></a>Installation
 
